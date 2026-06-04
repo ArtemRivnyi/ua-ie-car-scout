@@ -1,0 +1,26 @@
+=== FULL SCRAPER E2E REPORT ===
+Date: 2026-05-31T22:35:43.968Z
+Target: Toyota Corolla
+----------------------------------------
+1. Testing RST.ua...
+- Fetched 20 listings successfully.
+  Sample price: €6808 (7400 USD)
+  Sample ID: rst_15370725
+  Sample URL: https://rst.ua/oldcars/toyota/corolla/toyota_corolla_15370725.html
+- RST Test: SUCCESS (1692ms)
+----------------------------------------
+2. Testing OLX.ua...
+- Fetched 50 listings successfully.
+  Sample price: €5428 (5900 USD)
+  Sample ID: olx_YpmOL
+  Sample URL: https://www.olx.ua/d/uk/obyavlenie/prodam-toyota-corolla-IDYpmOL.html?search_reason=search%7Cpromoted
+- OLX Test: SUCCESS (3026ms)
+----------------------------------------
+3. Testing DoneDeal.ie...
+- Fetched 30 listings successfully.
+  Sample price: €1600 (1600 EUR)
+  Sample ID: donedeal_42221509
+  Sample URL: https://www.donedeal.iehttps://www.donedeal.ie/cars-for-sale/toyota-corolla/42221509
+- DoneDeal Test: SUCCESS (1663ms)
+----------------------------------------
+=== TEST COMPLETED ===

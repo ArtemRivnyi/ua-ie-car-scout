@@ -1,0 +1,35 @@
+services:
+  # ── Backend API (Express + DoneDeal scraper) ───────────────────────────────
+  - type: web
+    name: ua-ie-car-scout-api
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install
+    startCommand: node server/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000        # Render assigns its own port via $PORT; 10000 is the default
+      - key: VITE_AUTORIA_API_KEY
+        sync: false         # Set manually in Render dashboard — never commit real key
+
+  # ── Frontend (Vite static build) ──────────────────────────────────────────
+  - type: web
+    name: ua-ie-car-scout-web
+    env: static
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html   # SPA fallback — React Router handles routing
+    envVars:
+      - key: VITE_API_BASE
+        value: https://ua-ie-car-scout-api.onrender.com   # Update after first API deploy
+      - key: VITE_AUTORIA_API_KEY
+        sync: false

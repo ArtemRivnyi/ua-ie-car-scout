@@ -1,0 +1,51 @@
+{
+  "id": 42221509,
+  "userId": 4996821,
+  "title": "Toyota Corolla",
+  "section": {
+    "name": "cars",
+    "displayName": "Cars"
+  },
+  "age": "3 hours",
+  "publishDate": 1780253531248,
+  "county": "Dublin",
+  "countyTown": "Dublin 1",
+  "friendlyUrl": "https://www.donedeal.ie/cars-for-sale/toyota-corolla/42221509",
+  "relativeUrl": "/cars-for-sale/toyota-corolla/42221509",
+  "metaInfo": [
+    "2005",
+    "1.4 Petrol",
+    "186,086 km"
+  ],
+  "priceInfo": {
+    "price": "€1,600",
+    "priceOnRequest": false,
+    "priceInEuro": 1600
+  },
+  "imageAlt": "Toyota Corolla Hatchback, Petrol, 2005, Silver",
+  "gallery": {
+    "coverImage": {
+      "id": 388395334,
+      "sortOrder": 0,
+      "name": "photo_388395334",
+      "small": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiY292ZXIiLCJ3aWR0aCI6MzAwLCJoZWlnaHQiOjIyNX19LCJvdXRwdXRGb3JtYXQiOiJqcGVnIiwia2V5IjoicGhvdG9fMzg4Mzk1MzM0In0=?signature=500d57ce4b13566a54f6a1a7dcc9bf4fc39ab6a2c6f7f4b779d837755f40bf8d",
+      "small2": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiY292ZXIiLCJ3aWR0aCI6NjAwLCJoZWlnaHQiOjQ1MH19LCJvdXRwdXRGb3JtYXQiOiJqcGVnIiwia2V5IjoicGhvdG9fMzg4Mzk1MzM0In0=?signature=4e5865ffd4c099cf6b7fb0745ae4584e2f663d6d1bdbf7c9b6ab55eea6c479a0",
+      "medium": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiaW5zaWRlIiwid2lkdGgiOjYwMCwiaGVpZ2h0Ijo2MDB9fSwib3V0cHV0Rm9ybWF0IjoianBlZyIsImtleSI6InBob3RvXzM4ODM5NTMzNCJ9?signature=def7825b1625fddf5fadd48ff7e021125c0867def84e0d39a415ec7ce3cb2c24",
+      "large": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiaW5zaWRlIiwid2lkdGgiOjYwMCwiaGVpZ2h0Ijo2MDB9fSwib3V0cHV0Rm9ybWF0IjoianBlZyIsImtleSI6InBob3RvXzM4ODM5NTMzNCJ9?signature=def7825b1625fddf5fadd48ff7e021125c0867def84e0d39a415ec7ce3cb2c24",
+      "smallWebp": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiY292ZXIiLCJ3aWR0aCI6MzAwLCJoZWlnaHQiOjIyNX19LCJvdXRwdXRGb3JtYXQiOiJ3ZWJwIiwia2V5IjoicGhvdG9fMzg4Mzk1MzM0In0=?signature=5648f3f47c698c3914e3c598a6b0ed9876c18ef659b887157c20319139877a1e",
+      "small2Webp": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiY292ZXIiLCJ3aWR0aCI6NjAwLCJoZWlnaHQiOjQ1MH19LCJvdXRwdXRGb3JtYXQiOiJ3ZWJwIiwia2V5IjoicGhvdG9fMzg4Mzk1MzM0In0=?signature=f87bff81053b4ebf5d6b55ea1a9f5df240d641ed52216128b35d208377c5a38e",
+      "mediumWebp": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiaW5zaWRlIiwid2lkdGgiOjYwMCwiaGVpZ2h0Ijo2MDB9fSwib3V0cHV0Rm9ybWF0Ijoid2VicCIsImtleSI6InBob3RvXzM4ODM5NTMzNCJ9?signature=ee7f8485693adc99d10ee25e3412cb8c347be45f13966e26a776c11c97f402a4",
+      "largeWebp": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiaW5zaWRlIiwid2lkdGgiOjYwMCwiaGVpZ2h0Ijo2MDB9fSwib3V0cHV0Rm9ybWF0Ijoid2VicCIsImtleSI6InBob3RvXzM4ODM5NTMzNCJ9?signature=ee7f8485693adc99d10ee25e3412cb8c347be45f13966e26a776c11c97f402a4",
+      "xLarge": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiaW5zaWRlIiwid2lkdGgiOjEyMDAsImhlaWdodCI6MTIwMH19LCJvdXRwdXRGb3JtYXQiOiJqcGVnIiwia2V5IjoicGhvdG9fMzg4Mzk1MzM0In0=?signature=115a26118676a13cd2caf0c2d1ae3f3aabdb0fcf6f4c8ceaeae7d922050f8dcf",
+      "xLargeWebp": "https://media.donedeal.ie/eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJlZGl0cyI6eyJvdmVybGF5V2l0aCI6eyJidWNrZXQiOiJkb25lZGVhbC5pZS1waG90b3MiLCJvcHRpb25zIjp7ImdyYXZpdHkiOiJzb3V0aHdlc3QifSwia2V5Ijoid2F0ZXJtYXJrL0REV2F0ZXJtYXJrLXYxLnN2ZyJ9LCJyZXNpemUiOnsiZml0IjoiaW5zaWRlIiwid2lkdGgiOjEyMDAsImhlaWdodCI6MTIwMH19LCJvdXRwdXRGb3JtYXQiOiJ3ZWJwIiwia2V5IjoicGhvdG9fMzg4Mzk1MzM0In0=?signature=cedeb0114bc24936dc557309afd32e2fef91aef045d39895190ebb46e6464a34"
+    },
+    "totalMediaCount": 4
+  },
+  "mileageInKm": 186086,
+  "priceIndicatorEligible": false,
+  "spotlighted": false,
+  "saved": false,
+  "seller": {
+    "type": "PRIVATE"
+  }
+}

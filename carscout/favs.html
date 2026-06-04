@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Favourites — UA → IE Car Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo">
+        <svg class="navbar__logo-icon" viewBox="0 0 48 48" fill="none">
+          <rect x="1" y="1" width="46" height="46" rx="12" fill="#0A0E1A"/>
+          <path d="M10 31 Q10 29 12 29 L16.5 27.5 Q18 25 24 25 Q30 25 31.5 27.5 L36 29 Q38 29 38 31 L38 33 Q38 34 37 34 L35 34 Q35 32.5 33 32.5 Q31 32.5 31 34 L17 34 Q17 32.5 15 32.5 Q13 32.5 13 34 L11 34 Q10 34 10 33 Z" fill="white"/>
+          <circle cx="15" cy="34.5" r="2.8" fill="#1E293B" stroke="white" stroke-width="1"/>
+          <circle cx="33" cy="34.5" r="2.8" fill="#1E293B" stroke="white" stroke-width="1"/>
+          <path d="M20 28.5 Q21.5 26 24 26 Q26.5 26 28 28.5 Z" fill="#2563EB"/>
+        </svg>
+        <div class="navbar__logo-text">
+          <span class="navbar__logo-title">
+            <span style="font-size:10px;font-weight:600;color:var(--color-ua);margin-right:2px">UA</span>
+            Car Scout
+            <span style="font-size:10px;font-weight:600;color:var(--color-ie);margin-left:2px">IE</span>
+          </span>
+          <span class="navbar__logo-sub">Find cars in Ukraine · Import to Ireland</span>
+        </div>
+      </a>
+      <nav class="navbar__nav">
+        <a href="index.html" class="navbar__nav-item">Search</a>
+        <a href="calc.html"  class="navbar__nav-item">Import Calc</a>
+        <a href="favs.html"  class="navbar__nav-item active">Favourites</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="lang-badge">🇷🇺 RU</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="page-content">
+  <div class="container">
+    <h2 style="font-size:var(--text-2xl);font-weight:600;margin-bottom:var(--space-6);
+               letter-spacing:-0.02em">Saved listings</h2>
+
+    <div id="favs-list">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <p class="footer__disclaimer">Prices are indicative. Always verify VRT with Revenue Commissioners before purchase.</p>
+      <p class="footer__credit">Built for Eddie's Toyota hunt ☘️</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+(function renderFavourites() {
+  const container = document.getElementById('favs-list');
+  const listings  = window.CarScout.Favourites.getAll();
+
+  if (!listings.length) {
+    container.innerHTML = `
+      <div class="favourites-empty" role="status" aria-label="No saved listings">
+        <div class="favourites-empty__icon" aria-hidden="true">🤍</div>
+        <p class="favourites-empty__title">No saved listings yet</p>
+        <p class="favourites-empty__sub">Tap the heart icon on any listing to save it here for easy comparison.</p>
+        <a href="index.html" class="btn btn-primary btn-sm" style="margin-top:var(--space-2)">Browse listings</a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = listings.map(l => `
+    <article class="car-card" style="margin-bottom:var(--space-3)" data-listing='${JSON.stringify(l)}'>
+      <div style="width:200px;height:140px;background:var(--color-bg-muted);
+                  display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0">🚗</div>
+      <div class="car-card__body">
+        <div class="car-card__header">
+          <div>
+            <h3 class="car-card__title">${l.title || 'Saved listing'}</h3>
+            <div class="car-card__meta">
+              ${l.year ? `<span class="car-card__meta-item">📅 ${l.year}</span>` : ''}
+              ${l.source ? `<span class="source-chip"><span class="source-dot source-dot--autoria"></span>${l.source}</span>` : ''}
+            </div>
+          </div>
+          <button class="btn-save saved" data-save-id="${l.id}" aria-label="Remove from favourites">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="car-card__footer">
+          <div class="car-card__price">€&thinsp;${l.price ? l.price.toLocaleString('de-DE') : '—'}</div>
+          <div style="display:flex;gap:8px">
+            <a href="calc.html" class="btn btn-secondary btn-sm">Calc cost</a>
+            <a href="#" class="btn btn-primary btn-sm" rel="noopener">View →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join('');
+})();
+</script>
+</body>
+</html>

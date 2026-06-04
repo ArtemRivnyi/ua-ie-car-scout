@@ -1,0 +1,132 @@
+{
+  "app": {
+    "title": "UA → IE Car Scout",
+    "subtitle": "Ищи машины в Украине. Считай реальную стоимость ввоза в Ирландию."
+  },
+  "nav": {
+    "search": "Поиск",
+    "favourites": "Избранное",
+    "calculator": "Калькулятор",
+    "about": "О проекте"
+  },
+  "search": {
+    "placeholder": "Марка, модель или ключевое слово...",
+    "yearFrom": "Год от",
+    "yearTo": "Год до",
+    "priceFrom": "Цена от (€)",
+    "priceTo": "Цена до (€)",
+    "source": "Площадка",
+    "allSources": "Все площадки",
+    "search": "Найти",
+    "clear": "Сбросить",
+    "results": "{{count}} объявлений",
+    "noResults": "Объявления не найдены. Попробуй другие фильтры.",
+    "loading": "Поиск...",
+    "uaSources": "🇺🇦 Украинские площадки",
+    "ieSources": "🇮🇪 Ирландские площадки",
+    "openExternal": "Откроется в новой вкладке",
+    "apiSearch": "Поиск по API",
+    "externalOpened": "Открыто {{count}} внешних сайтов"
+  },
+  "sources": {
+    "autoria": "AUTO.RIA",
+    "rst": "RST.ua",
+    "carsua": "CARS.ua",
+    "olx": "OLX.ua",
+    "donedeal": "DoneDeal",
+    "carsireland": "CarsIreland",
+    "carzone": "Carzone"
+  },
+  "toyota": {
+    "quickFilter": "Любимые Toyota",
+    "all_80_95": "Все Toyota (1980-1995)",
+    "ae86": "AE86 Corolla/Sprinter",
+    "supra_a60": "Supra A60 (81-86)",
+    "supra_a70": "Supra A70 (86-93)",
+    "mr2_aw11": "MR2 AW11 (84-89)",
+    "mr2_sw20": "MR2 SW20 (89-99)",
+    "celica": "Celica T160/T180",
+    "corolla": "Corolla (80-96)",
+    "hilux": "Hilux / Surf"
+  },
+  "listing": {
+    "source": "Площадка",
+    "year": "Год",
+    "engine": "Двигатель",
+    "mileage": "Пробег",
+    "location": "Локация",
+    "price": "Цена",
+    "viewListing": "Открыть объявление",
+    "save": "Сохранить",
+    "saved": "Сохранено",
+    "calcImport": "Посчитать ввоз"
+  },
+  "stats": {
+    "title": "Рынок Украины — статистика цен",
+    "min": "Минимум",
+    "avg": "Среднее",
+    "median": "Медиана",
+    "max": "Максимум",
+    "count": "{{count}} объявлений",
+    "currency": "EUR"
+  },
+  "ireland": {
+    "title": "Ирландский рынок (сравнение)",
+    "minPrice": "Мин. цена (€)",
+    "avgPrice": "Средняя цена (€)",
+    "maxPrice": "Макс. цена (€)",
+    "note": "Введи цены с Done Deal, Cars Ireland или Motorcheck",
+    "sources": "Источники: donedeal.ie · carsireland.ie",
+    "autoFetch": "Авто-загрузка с DoneDeal",
+    "fetching": "Загрузка ирландских цен...",
+    "fetchError": "Не удалось загрузить ирландские цены",
+    "found": "{{count}} объявлений найдено на DoneDeal",
+    "notFound": "Не найдено таких авто на DoneDeal. Вы можете ввести цены вручную.",
+    "manualOverride": "Ручной ввод цен (переопределить)",
+    "hideManual": "Скрыть данные DoneDeal",
+    "showManual": "Показать ручной ввод",
+    "viewDoneDeal": "Открыть DoneDeal ↗"
+  },
+  "calc": {
+    "title": "Калькулятор стоимости ввоза",
+    "carPrice": "Цена автомобиля (€)",
+    "carAge": "Возраст авто",
+    "age30plus": "30+ лет (классика)",
+    "age20to30": "20–30 лет",
+    "ageUnder20": "До 20 лет",
+    "engine": "Объём двигателя",
+    "shipping": "Транспортировка UA → IE (€)",
+    "misc": "Прочие расходы (NCT, страховка и т.д.) (€)",
+    "breakdown": "Детализация расходов",
+    "vrt": "VRT (налог на регистрацию)",
+    "customs": "Таможенная пошлина (6.5%)",
+    "vat": "НДС (23%)",
+    "nox": "Налог NOx",
+    "shippingLine": "Транспортировка",
+    "otherCosts": "Прочие расходы",
+    "total": "Итого: себестоимость",
+    "potential": "Потенциальная прибыль vs средняя IE цена",
+    "vrtNote": "VRT рассчитывается Revenue по OMSP — всегда проверяй на revenue.ie/vrt",
+    "classicNote": "Классика 30+ лет освобождена от таможенной пошлины при ввозе из Украины",
+    "profitable": "Потенциально выгодно",
+    "breakEven": "Безубыточно",
+    "loss": "Невыгодно при такой цене"
+  },
+  "compare": {
+    "title": "UA vs IE — сравнение цен",
+    "uaAvg": "Средняя UA",
+    "ieAvg": "Средняя IE",
+    "saving": "Экономия",
+    "premium": "Наценка IE"
+  },
+  "favourites": {
+    "title": "Сохранённые объявления",
+    "empty": "Нет сохранённых объявлений",
+    "remove": "Удалить",
+    "export": "Экспорт в PDF"
+  },
+  "footer": {
+    "disclaimer": "Цены ориентировочные. Всегда проверяй VRT в Revenue Commissioners перед покупкой.",
+    "madeBy": "Сделано для охоты Эдди за Toyota 🍀"
+  }
+}

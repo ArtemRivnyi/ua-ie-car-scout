@@ -1,0 +1,132 @@
+{
+  "app": {
+    "title": "UA → IE Car Scout",
+    "subtitle": "Find cars in Ukraine. Calculate real import cost to Ireland."
+  },
+  "nav": {
+    "search": "Search",
+    "favourites": "Favourites",
+    "calculator": "Import Calc",
+    "about": "About"
+  },
+  "search": {
+    "placeholder": "Make, model or keyword...",
+    "yearFrom": "Year from",
+    "yearTo": "Year to",
+    "priceFrom": "Price from (€)",
+    "priceTo": "Price to (€)",
+    "source": "Source",
+    "allSources": "All sources",
+    "search": "Search",
+    "clear": "Clear",
+    "results": "{{count}} results",
+    "noResults": "No listings found. Try different filters.",
+    "loading": "Searching...",
+    "uaSources": "🇺🇦 Ukraine sources",
+    "ieSources": "🇮🇪 Ireland sources",
+    "openExternal": "Opens in new tab",
+    "apiSearch": "API search",
+    "externalOpened": "Opened {{count}} external sites"
+  },
+  "sources": {
+    "autoria": "AUTO.RIA",
+    "rst": "RST.ua",
+    "carsua": "CARS.ua",
+    "olx": "OLX.ua",
+    "donedeal": "DoneDeal",
+    "carsireland": "CarsIreland",
+    "carzone": "Carzone"
+  },
+  "toyota": {
+    "quickFilter": "Toyota favourites",
+    "all_80_95": "All Toyota (1980-1995)",
+    "ae86": "AE86 Corolla/Sprinter",
+    "supra_a60": "Supra A60 (81-86)",
+    "supra_a70": "Supra A70 (86-93)",
+    "mr2_aw11": "MR2 AW11 (84-89)",
+    "mr2_sw20": "MR2 SW20 (89-99)",
+    "celica": "Celica T160/T180",
+    "corolla": "Corolla (80-96)",
+    "hilux": "Hilux / Surf"
+  },
+  "listing": {
+    "source": "Source",
+    "year": "Year",
+    "engine": "Engine",
+    "mileage": "Mileage",
+    "location": "Location",
+    "price": "Price",
+    "viewListing": "View listing",
+    "save": "Save",
+    "saved": "Saved",
+    "calcImport": "Calculate import"
+  },
+  "stats": {
+    "title": "Ukraine market — price stats",
+    "min": "Minimum",
+    "avg": "Average",
+    "median": "Median",
+    "max": "Maximum",
+    "count": "{{count}} listings",
+    "currency": "EUR"
+  },
+  "ireland": {
+    "title": "Irish market (comparison)",
+    "minPrice": "Min price (€)",
+    "avgPrice": "Avg price (€)",
+    "maxPrice": "Max price (€)",
+    "note": "Enter prices from Done Deal, Cars Ireland, or Motorcheck",
+    "sources": "Sources: donedeal.ie · carsireland.ie",
+    "autoFetch": "Auto-fetch from DoneDeal",
+    "fetching": "Fetching Irish prices...",
+    "fetchError": "Could not fetch Irish prices",
+    "found": "{{count}} listings found on DoneDeal",
+    "notFound": "No similar cars found on DoneDeal. You can enter prices manually.",
+    "manualOverride": "Manual prices (override)",
+    "hideManual": "Hide DoneDeal data",
+    "showManual": "Show manual input",
+    "viewDoneDeal": "Open DoneDeal ↗"
+  },
+  "calc": {
+    "title": "Import cost calculator",
+    "carPrice": "Car price (€)",
+    "carAge": "Car age",
+    "age30plus": "30+ years (classic)",
+    "age20to30": "20–30 years",
+    "ageUnder20": "Under 20 years",
+    "engine": "Engine size",
+    "shipping": "Shipping UA → IE (€)",
+    "misc": "Other costs (NCT prep, insurance, etc.) (€)",
+    "breakdown": "Cost breakdown",
+    "vrt": "VRT (Vehicle Registration Tax)",
+    "customs": "Customs duty (6.5%)",
+    "vat": "VAT (23%)",
+    "nox": "NOx levy",
+    "shippingLine": "Shipping",
+    "otherCosts": "Other costs",
+    "total": "Total landed cost",
+    "potential": "Potential margin vs IE avg",
+    "vrtNote": "VRT is assessed by Revenue on OMSP — always verify at revenue.ie/vrt",
+    "classicNote": "Classic cars (30y+) are exempt from customs duty when imported from Ukraine (post-Brexit EU rules apply)",
+    "profitable": "Potentially profitable",
+    "breakEven": "Break even",
+    "loss": "Not worth importing at this price"
+  },
+  "compare": {
+    "title": "UA vs IE — price comparison",
+    "uaAvg": "UA average",
+    "ieAvg": "IE average",
+    "saving": "You save",
+    "premium": "IE premium"
+  },
+  "favourites": {
+    "title": "Saved listings",
+    "empty": "No saved listings yet",
+    "remove": "Remove",
+    "export": "Export to PDF"
+  },
+  "footer": {
+    "disclaimer": "Prices are indicative. Always verify VRT with Revenue Commissioners before purchase.",
+    "madeBy": "Built for Eddie's Toyota hunt 🍀"
+  }
+}

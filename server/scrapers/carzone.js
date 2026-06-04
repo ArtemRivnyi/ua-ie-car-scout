@@ -1,0 +1,101 @@
+import { getBrowser } from './puppeteerSetup.js';
+import * as cheerio from 'cheerio';
+
+/**
+ * Fetches car listings from Carzone.ie using Puppeteer.
+ */
+export async function scrapeCarzone(make, model, yearFrom, yearTo) {
+  let makeF = make ? make.charAt(0).toUpperCase() + make.slice(1).toLowerCase() : '';
+  let modelF = model ? model.charAt(0).toUpperCase() + model.slice(1).toLowerCase() : '';
+  
+  const params = new URLSearchParams();
+  if (makeF) params.set('make', makeF);
+  if (modelF) params.set('model', modelF);
+  if (yearFrom) params.set('minYear', yearFrom);
+  if (yearTo) params.set('maxYear', yearTo);
+
+  const url = `https://www.carzone.ie/search?${params.toString()}`;
+
+  try {
+    const browser = await getBrowser();
+    const page = await browser.newPage();
+    
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    console.log(`[carzone] Navigating to ${url}...`);
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    
+    const content = await page.content();
+    const $ = cheerio.load(content);
+    await page.close();
+
+    const ads = parseCarzone(content, make, model, yearFrom, yearTo);
+    console.log(`[carzone] Got ${ads.length} ads via Puppeteer`);
+    return ads;
+  } catch (err) {
+    console.error('[carzone] scrapeCarzone failed:', err.message);
+    return [];
+  }
+}
+
+export function parseCarzone(htmlContent, make, model, yearFrom, yearTo) {
+  const $ = cheerio.load(htmlContent);
+  let ads = [];
+  $('stock-summary-item').each((i, el) => {
+    const fullText = $(el).text().replace(/\s+/g, ' ');
+    
+    // Get price
+    const priceText = $(el).find('[class*="price"]').first().text().trim() || fullText;
+    const priceMatch = priceText.match(/€\s*(\d[\d\s,]*)/);
+    const priceEur = priceMatch ? parseInt(priceMatch[1].replace(/[^\d]/g, ''), 10) : 0;
+    
+    // Get link
+    let href = $(el).find('a[href*="/used-cars/"], a[href*="/car-details/"]').first().attr('href');
+    if (!href) href = $(el).find('a').first().attr('href');
+    
+    if (href && !href.startsWith('http')) {
+      href = href.startsWith('/') ? href : `/${href}`;
+    }
+    
+    // Get year
+    const yearMatch = fullText.match(/\b(19|20)\d{2}\b/);
+    const year = yearMatch ? parseInt(yearMatch[0], 10) : null;
+    
+    if (yearFrom && (!year || year < parseInt(yearFrom, 10))) return;
+    if (yearTo && (!year || year > parseInt(yearTo, 10))) return;
+    
+    // Get image
+    let imgUrl = $(el).find('img').first().attr('src');
+    if (!imgUrl) {
+      const bgSpan = $(el).find('[style*="background-image"]').first();
+      const style = bgSpan.attr('style') || '';
+      const imgMatch = style.match(/url\("?([^"\)]+)"?\)/);
+      imgUrl = imgMatch ? imgMatch[1] : null;
+    }
+    
+    if (priceEur > 0 && href && href.length > 5) {
+      ads.push({
+        id: `cz_${href.split('?')[0].replace(/\D/g, '').substring(0,8) || Math.random()}`,
+        source: 'Carzone',
+        sourceUrl: `https://www.carzone.ie${href}`,
+        make,
+        model,
+        year,
+        priceEur,
+        priceOriginal: priceEur,
+        priceOriginalCurrency: 'EUR',
+        photos: imgUrl ? [imgUrl] : [],
+        description: fullText.substring(0, 100).trim()
+      });
+    }
+  });
+
+  return ads;
+}

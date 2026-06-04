@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UA → IE Car Scout — Find & Import Cars from Ukraine</title>
+  <meta name="description" content="Search cars in Ukraine. Calculate real import cost to Ireland including VRT, customs and VAT.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
+
+  <style>
+    /* Page-specific tweaks */
+    .hero-route {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-4);
+    }
+    .hero-route .flag {
+      font-size: 18px;
+      line-height: 1;
+    }
+    .hero-route .arrow {
+      color: var(--color-accent);
+      font-size: 16px;
+    }
+
+    .search-main {
+      background: var(--color-bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-8);
+    }
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    .search-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+
+    .btn-search {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-xl);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    .btn-search:hover {
+      background: var(--color-accent-hover);
+      box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-search:active { transform: scale(0.98); }
+
+    .btn-clear {
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      transition: all var(--duration-fast);
+    }
+    .btn-clear:hover { color: var(--color-text-secondary); background: var(--color-bg-subtle); }
+
+    /* Sources sections side by side */
+    .sources-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    /* Save button on card */
+    .btn-save {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all var(--duration-fast) var(--ease-out);
+      color: var(--color-text-muted);
+    }
+    .btn-save:hover   { border-color: #F43F5E; color: #F43F5E; background: #FFF1F4; }
+    .btn-save.saved   { border-color: #F43F5E; color: #F43F5E; background: #FFF1F4; }
+
+    /* Demo results */
+    .demo-result-img {
+      width: 200px;
+      height: 140px;
+      background: linear-gradient(135deg, var(--n-150) 0%, var(--n-200) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      flex-shrink: 0;
+    }
+
+    .source-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--color-bg-muted);
+      color: var(--color-text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .sources-section { grid-template-columns: 1fr; }
+      .filters-row { grid-template-columns: 1fr 1fr; }
+      .demo-result-img { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="container">
+    <div class="navbar__inner">
+
+      <!-- Logo -->
+      <a href="index.html" class="navbar__logo" aria-label="UA → IE Car Scout home">
+        <svg class="navbar__logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1" y="1" width="46" height="46" rx="12" fill="#0A0E1A"/>
+          <path d="M10 31 Q10 29 12 29 L16.5 27.5 Q18 25 24 25 Q30 25 31.5 27.5 L36 29 Q38 29 38 31 L38 33 Q38 34 37 34 L35 34 Q35 32.5 33 32.5 Q31 32.5 31 34 L17 34 Q17 32.5 15 32.5 Q13 32.5 13 34 L11 34 Q10 34 10 33 Z" fill="white"/>
+          <circle cx="15" cy="34.5" r="2.8" fill="#1E293B" stroke="white" stroke-width="1"/>
+          <circle cx="33" cy="34.5" r="2.8" fill="#1E293B" stroke="white" stroke-width="1"/>
+          <path d="M20 28.5 Q21.5 26 24 26 Q26.5 26 28 28.5 Z" fill="#2563EB"/>
+          <!-- UA stripe bottom-left -->
+          <clipPath id="cl1"><rect x="1" y="39" width="23" height="8" rx="0"/></clipPath>
+          <rect x="1" y="39" width="23" height="4" fill="#3B82F6" opacity="0.55" clip-path="url(#cl1)"/>
+          <rect x="1" y="43" width="23" height="4" fill="#FBBF24" opacity="0.55" clip-path="url(#cl1)"/>
+          <!-- IE dot bottom-right -->
+          <circle cx="40" cy="42" r="5" fill="#16A34A" opacity="0.75"/>
+          <text x="40" y="45" text-anchor="middle" font-size="6" font-weight="700" fill="white" font-family="sans-serif">☘</text>
+        </svg>
+
+        <div class="navbar__logo-text">
+          <span class="navbar__logo-title">
+            <span style="font-size:10px;font-weight:600;color:var(--color-ua);margin-right:2px;vertical-align:1px">UA</span>
+            Car Scout
+            <span style="font-size:10px;font-weight:600;color:var(--color-ie);margin-left:2px;vertical-align:1px">IE</span>
+          </span>
+          <span class="navbar__logo-sub">Find cars in Ukraine · Import to Ireland</span>
+        </div>
+      </a>
+
+      <!-- Tabs navigation -->
+      <nav class="navbar__nav" aria-label="Page sections">
+        <a href="index.html"   class="navbar__nav-item active" data-tab="search">Search</a>
+        <a href="calc.html"    class="navbar__nav-item" data-tab="calc">Import Calc</a>
+        <a href="favs.html"    class="navbar__nav-item" data-tab="favs">Favourites</a>
+      </nav>
+
+      <!-- Right actions -->
+      <div class="navbar__actions">
+        <button class="lang-badge" aria-label="Switch to Russian">🇷🇺 RU</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="page-content">
+  <div class="container">
+
+    <!-- Hero -->
+    <section class="search-section">
+      <div class="hero-route" aria-hidden="true">
+        <span class="flag">🇺🇦</span>
+        Ukraine
+        <span class="arrow">→</span>
+        <span class="flag">🇮🇪</span>
+        Ireland
+      </div>
+      <h1 class="search-section__title">Find your next car in Ukraine</h1>
+      <p class="search-section__sub">Real-time listings. Accurate import cost to Ireland.</p>
+
+      <!-- Quick picks -->
+      <div class="quick-picks" role="group" aria-label="Quick search suggestions">
+        <button class="pill-btn" data-query="AE86 Corolla/Sprinter" title="Search AE86 Corolla/Sprinter">🏎 AE86 Corolla/Sprinter</button>
+        <button class="pill-btn" data-query="Toyota Supra A60" title="Search Supra A60">🔥 Supra A60 (81–86)</button>
+        <button class="pill-btn" data-query="Toyota Supra A70" title="Search Supra A70">🔥 Supra A70 (86–93)</button>
+        <button class="pill-btn" data-query="Toyota MR2 AW11" title="Search MR2 AW11">⚡ MR2 AW11 (84–89)</button>
+        <button class="pill-btn" data-query="Toyota MR2 SW20" title="Search MR2 SW20">⚡ MR2 SW20 (89–99)</button>
+        <button class="pill-btn" data-query="Toyota Celica T160" title="Search Celica">🚗 Celica T160/T180</button>
+        <button class="pill-btn" data-query="Toyota Corolla" title="Search Corolla">🚗 Corolla (80–96)</button>
+        <button class="pill-btn" data-query="Toyota Hilux Surf" title="Search Hilux/Surf">🚙 Hilux / Surf</button>
+      </div>
+
+      <!-- Search box -->
+      <div class="search-main">
+
+        <!-- Sources -->
+        <div class="sources-section">
+          <div>
+            <div class="section-label">
+              <span class="section-label__flag section-label__flag--ua">UA</span>
+              <span class="section-label__text">Ukraine sources</span>
+            </div>
+            <div class="sources-row">
+              <label class="checkbox-wrapper checked" role="checkbox" aria-checked="true" tabindex="0">
+                <div class="checkbox-box">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <span class="checkbox-label">
+                  <span class="source-dot source-dot--autoria"></span>
+                  AUTO.RIA
+                  <span class="api-badge">API</span>
+                </span>
+              </label>
+
+              <label class="checkbox-wrapper" role="checkbox" aria-checked="false" tabindex="0">
+                <div class="checkbox-box"></div>
+                <span class="checkbox-label">
+                  <span class="source-dot source-dot--rst"></span>
+                  RST.ua
+                  <span style="font-size:10px;color:var(--color-text-muted)">↗</span>
+                </span>
+              </label>
+
+              <label class="checkbox-wrapper" role="checkbox" aria-checked="false" tabindex="0">
+                <div class="checkbox-box"></div>
+                <span class="checkbox-label">
+                  <span class="source-dot source-dot--cars"></span>
+                  CARS.ua
+                  <span style="font-size:10px;color:var(--color-text-muted)">↗</span>
+                </span>
+              </label>
+
+              <label class="checkbox-wrapper" role="checkbox" aria-checked="false" tabindex="0">
+                <div class="checkbox-box"></div>
+                <span class="checkbox-label">
+                  <span class="source-dot source-dot--olx"></span>
+                  OLX.ua
+                  <span style="font-size:10px;color:var(--color-text-muted)">↗</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label">
+              <span class="section-label__flag section-label__flag--ie">IE</span>
+              <span class="section-label__text">Ireland sources</span>
+            </div>
+            <div class="sources-row">
+              <label class="checkbox-wrapper checked" role="checkbox" aria-checked="true" tabindex="0">
+                <div class="checkbox-box">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <span class="checkbox-label">
+                  <span class="source-dot source-dot--donedeal"></span>
+                  DoneDeal
+                  <span class="api-badge">API</span>
+                </span>
+              </label>
+
+              <label class="checkbox-wrapper" role="checkbox" aria-checked="false" tabindex="0">
+                <div class="checkbox-box"></div>
+                <span class="checkbox-label">
+                  <span class="source-dot source-dot--carsi"></span>
+                  CarsIreland
+                  <span style="font-size:10px;color:var(--color-text-muted)">↗</span>
+                </span>
+              </label>
+
+              <label class="checkbox-wrapper" role="checkbox" aria-checked="false" tabindex="0">
+                <div class="checkbox-box"></div>
+                <span class="checkbox-label">
+                  <span class="source-dot source-dot--carzone"></span>
+                  Carzone
+                  <span style="font-size:10px;color:var(--color-text-muted)">↗</span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keyword -->
+        <div class="search-bar" role="search">
+          <svg class="search-bar__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="search"
+            id="keyword-input"
+            class="search-bar__input"
+            placeholder="Make, model or keyword…"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search cars by make, model or keyword"
+          >
+        </div>
+
+        <!-- Year / price filters -->
+        <div class="filters-row" role="group" aria-label="Filter by year and price">
+          <div class="field">
+            <label class="field__label" for="year-from">Year from</label>
+            <input type="number" id="year-from" class="input" placeholder="1980" min="1950" max="2024" aria-label="Year from">
+          </div>
+          <div class="field">
+            <label class="field__label" for="year-to">Year to</label>
+            <input type="number" id="year-to" class="input" placeholder="2000" min="1950" max="2024" aria-label="Year to">
+          </div>
+          <div class="field">
+            <label class="field__label" for="price-from">Price from (€)</label>
+            <input type="number" id="price-from" class="input" placeholder="0" min="0" aria-label="Minimum price in euros">
+          </div>
+          <div class="field">
+            <label class="field__label" for="price-to">Price to (€)</label>
+            <input type="number" id="price-to" class="input" placeholder="50 000" min="0" aria-label="Maximum price in euros">
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="search-actions">
+          <button class="btn-search" type="button" aria-label="Search">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Search
+          </button>
+          <button class="btn-clear" type="button" aria-label="Clear all filters">Clear</button>
+        </div>
+
+      </div><!-- /search-main -->
+
+      <!-- Sample results (demo) -->
+      <div class="results-header">
+        <p class="results-count"><strong>3</strong> results found</p>
+        <div class="results-sort">
+          Sort by
+          <select class="input" style="height:32px;width:auto;font-size:13px;padding:0 10px" aria-label="Sort results">
+            <option>Price ↑</option>
+            <option>Price ↓</option>
+            <option>Year ↓</option>
+            <option>Mileage ↑</option>
+            <option>Import cost ↑</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="results-grid" role="list">
+
+        <!-- Result card 1 -->
+        <article class="car-card" role="listitem"
+          data-listing='{"id":"ua-1","title":"Toyota Supra A70 3.0 Turbo","year":1991,"price":6500,"source":"AUTO.RIA"}'>
+          <div class="demo-result-img" aria-hidden="true">🚗</div>
+          <div class="car-card__body">
+            <div class="car-card__header">
+              <div>
+                <h3 class="car-card__title">Toyota Supra A70 3.0 Turbo</h3>
+                <div class="car-card__meta">
+                  <span class="car-card__meta-item">📅 1991</span>
+                  <span class="car-card__meta-item">⏱ 185 000 km</span>
+                  <span class="car-card__meta-item">⚙️ Manual</span>
+                  <span class="car-card__meta-item">
+                    <span class="source-chip">
+                      <span class="source-dot source-dot--autoria"></span>
+                      AUTO.RIA
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <button class="btn-save" data-save-id="ua-1" aria-label="Save to favourites">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+            <div class="car-card__footer">
+              <div>
+                <div class="car-card__price">€&thinsp;6 500</div>
+                <div class="car-card__price-landed">
+                  + import →
+                  <span class="car-card__price-total">€&thinsp;~9 650 landed</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <a href="calc.html" class="btn btn-secondary btn-sm" aria-label="Calculate import cost">Calc cost</a>
+                <a href="#" class="btn btn-primary btn-sm" aria-label="View full listing" rel="noopener">View →</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Result card 2 -->
+        <article class="car-card" role="listitem"
+          data-listing='{"id":"ua-2","title":"Toyota MR2 AW11 1.6","year":1987,"price":3200,"source":"AUTO.RIA"}'>
+          <div class="demo-result-img" aria-hidden="true">🏎</div>
+          <div class="car-card__body">
+            <div class="car-card__header">
+              <div>
+                <h3 class="car-card__title">Toyota MR2 AW11 1.6</h3>
+                <div class="car-card__meta">
+                  <span class="car-card__meta-item">📅 1987</span>
+                  <span class="car-card__meta-item">⏱ 140 000 km</span>
+                  <span class="car-card__meta-item">⚙️ Manual</span>
+                  <span class="car-card__meta-item">
+                    <span class="source-chip">
+                      <span class="source-dot source-dot--autoria"></span>
+                      AUTO.RIA
+                    </span>
+                  </span>
+                  <span class="badge badge--success" style="font-size:11px">30+ yr classic</span>
+                </div>
+              </div>
+              <button class="btn-save" data-save-id="ua-2" aria-label="Save to favourites">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+            <div class="car-card__footer">
+              <div>
+                <div class="car-card__price">€&thinsp;3 200</div>
+                <div class="car-card__price-landed">
+                  + import →
+                  <span class="car-card__price-total">€&thinsp;~5 500 landed</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <a href="calc.html" class="btn btn-secondary btn-sm">Calc cost</a>
+                <a href="#" class="btn btn-primary btn-sm" rel="noopener">View →</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Result card 3 -->
+        <article class="car-card" role="listitem"
+          data-listing='{"id":"ua-3","title":"Toyota AE86 Corolla Levin 1.6","year":1985,"price":5800,"source":"AUTO.RIA"}'>
+          <div class="demo-result-img" aria-hidden="true">⚡</div>
+          <div class="car-card__body">
+            <div class="car-card__header">
+              <div>
+                <h3 class="car-card__title">Toyota AE86 Corolla Levin 1.6</h3>
+                <div class="car-card__meta">
+                  <span class="car-card__meta-item">📅 1985</span>
+                  <span class="car-card__meta-item">⏱ 210 000 km</span>
+                  <span class="car-card__meta-item">⚙️ Manual</span>
+                  <span class="car-card__meta-item">
+                    <span class="source-chip">
+                      <span class="source-dot source-dot--autoria"></span>
+                      AUTO.RIA
+                    </span>
+                  </span>
+                  <span class="badge badge--success" style="font-size:11px">30+ yr classic</span>
+                </div>
+              </div>
+              <button class="btn-save" data-save-id="ua-3" aria-label="Save to favourites">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+            <div class="car-card__footer">
+              <div>
+                <div class="car-card__price">€&thinsp;5 800</div>
+                <div class="car-card__price-landed">
+                  + import →
+                  <span class="car-card__price-total">€&thinsp;~8 400 landed</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <a href="calc.html" class="btn btn-secondary btn-sm">Calc cost</a>
+                <a href="#" class="btn btn-primary btn-sm" rel="noopener">View →</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </div><!-- /container -->
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer__inner">
+      <p class="footer__disclaimer">
+        Prices are indicative. Always verify VRT with Revenue Commissioners before purchase.
+        VAT and customs calculated per current Irish Revenue guidelines.
+      </p>
+      <p class="footer__credit">Built for Eddie's Toyota hunt ☘️</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
