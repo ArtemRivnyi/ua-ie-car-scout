@@ -20,7 +20,6 @@ services:
   - type: web
     name: ua-ie-car-scout-web
     env: static
-    plan: free
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:
