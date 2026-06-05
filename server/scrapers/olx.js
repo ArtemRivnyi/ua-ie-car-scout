@@ -1,5 +1,6 @@
 import { getBrowser } from './puppeteerSetup.js';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 import { getExchangeRates } from '../services/exchangeRateService.js';
 
 /**
@@ -16,9 +17,10 @@ export async function scrapeOlx(query, yearFrom, yearTo) {
     if (yearTo) url += `&search%5Bfilter_float_motor_year%3Ato%5D=${yearTo}`;
   }
 
+  let page;
   try {
     const browser = await getBrowser();
-    const page = await browser.newPage();
+    page = await browser.newPage();
     
     await page.setRequestInterception(true);
     page.on('request', (req) => {
@@ -38,6 +40,10 @@ export async function scrapeOlx(query, yearFrom, yearTo) {
   } catch (err) {
     console.error('[olx] scrapeOlx failed:', err.message);
     return [];
+  } finally {
+    if (page && !page.isClosed()) {
+      await page.close().catch(() => {});
+    }
   }
 }
 
@@ -120,8 +126,11 @@ export function parseOlx(htmlContent, query, rates, yearFrom, yearTo) {
     if (img && img.startsWith('/')) img = `https://www.olx.ua${img}`;
     if (img) img = img.replace(':443', '');
 
+    const rawId = href.match(/-ID(.*?)\.html/)?.[1] || title;
+    const hash = crypto.createHash('md5').update(rawId + priceNum).digest('hex').substring(0, 8);
+
     ads.push({
-      id: `olx_${href.match(/-ID(.*?)\.html/)?.[1] || Math.random()}`,
+      id: `olx_${hash}`,
       source: 'OLX.ua',
       sourceUrl: `https://www.olx.ua${href}`,
       make,

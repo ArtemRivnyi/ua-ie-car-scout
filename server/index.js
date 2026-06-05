@@ -91,72 +91,92 @@ app.get('/api/autoria/info', async (req, res) => {
 
 /* ── /api/scrape/ie ─────────────────────────────── */
 app.get('/api/scrape/ie', async (req, res) => {
-  const { sources = '', make = '', model = '', yearFrom, yearTo, priceFrom, priceTo } = req.query;
-  const sourcesArr = sources.split(',').map(s => s.trim()).filter(Boolean);
+  try {
+    const rawSources = req.query.sources;
+    const sources = Array.isArray(rawSources) ? rawSources.join(',') : String(rawSources || '');
+    const make = String(req.query.make || '');
+    const model = String(req.query.model || '');
+    const { yearFrom, yearTo, priceFrom, priceTo } = req.query;
+    
+    const sourcesArr = sources.split(',').map(s => s.trim()).filter(Boolean);
 
-  const cacheKey = `ie:${sources}:${make}:${model}:${yearFrom}:${yearTo}:${priceFrom}:${priceTo}`;
-  const cached = getCached(cacheKey);
-  if (cached) { console.log(`[cache HIT] ${cacheKey}`); return res.json(cached); }
+    const cacheKey = `ie:${sources}:${make}:${model}:${yearFrom}:${yearTo}:${priceFrom}:${priceTo}`;
+    const cached = getCached(cacheKey);
+    if (cached) { console.log(`[cache HIT] ${cacheKey}`); return res.json(cached); }
 
-  console.log(`[ie] sources=${sourcesArr} make=${make} model=${model} years=${yearFrom}-${yearTo}`);
+    console.log(`[ie] sources=${sourcesArr} make=${make} model=${model} years=${yearFrom}-${yearTo}`);
 
-  // Run all scrapers in parallel, never let one crash the whole response
-  const tasks = sourcesArr.map(src => {
-    if (src === 'donedeal')    return scrapeDoneDeal(`${make} ${model}`.trim(), yearFrom, yearTo, 40).catch(e => { console.error('[donedeal]',e.message); return []; });
-    if (src === 'carsireland') return scrapeCarsIreland(make, model, yearFrom, yearTo).catch(e => { console.error('[carsireland]',e.message); return []; });
-    if (src === 'carzone')     return scrapeCarzone(make, model, yearFrom, yearTo).catch(e => { console.error('[carzone]',e.message); return []; });
-    return Promise.resolve([]);
-  });
+    // Run all scrapers in parallel, never let one crash the whole response
+    const tasks = sourcesArr.map(src => {
+      if (src === 'donedeal')    return scrapeDoneDeal(`${make} ${model}`.trim(), yearFrom, yearTo, 40).catch(e => { console.error('[donedeal]',e.message); return []; });
+      if (src === 'carsireland') return scrapeCarsIreland(make, model, yearFrom, yearTo).catch(e => { console.error('[carsireland]',e.message); return []; });
+      if (src === 'carzone')     return scrapeCarzone(make, model, yearFrom, yearTo).catch(e => { console.error('[carzone]',e.message); return []; });
+      return Promise.resolve([]);
+    });
 
-  let allAds = (await Promise.allSettled(tasks))
-    .flatMap(r => r.status === 'fulfilled' ? r.value : []);
+    let allAds = (await Promise.allSettled(tasks))
+      .flatMap(r => r.status === 'fulfilled' ? r.value : []);
 
-  // Apply strict post-scrape filters
-  allAds = applyFilters(allAds, { make, model, yearFrom, yearTo, priceFrom, priceTo });
+    // Apply strict post-scrape filters
+    allAds = applyFilters(allAds, { make, model, yearFrom, yearTo, priceFrom, priceTo });
 
-  // Deduplicate before stats
-  allAds = deduplicateAds(allAds);
+    // Deduplicate before stats
+    allAds = deduplicateAds(allAds);
 
-  const stats = calcStats(allAds);
-  const result = { listings: allAds, stats };
-  setCache(cacheKey, result);
-  res.json(result);
+    const stats = calcStats(allAds);
+    const result = { listings: allAds, stats };
+    setCache(cacheKey, result);
+    res.json(result);
+  } catch (err) {
+    console.error('[ie] API Error:', err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
 });
 
 /* ── /api/scrape/ua ─────────────────────────────── */
 app.get('/api/scrape/ua', async (req, res) => {
-  const { sources = '', query = '', yearFrom, yearTo, priceFrom, priceTo } = req.query;
-  const sourcesArr = sources.split(',').map(s => s.trim()).filter(Boolean);
+  try {
+    const rawSources = req.query.sources;
+    const sources = Array.isArray(rawSources) ? rawSources.join(',') : String(rawSources || '');
+    const rawQuery = req.query.query;
+    const query = Array.isArray(rawQuery) ? rawQuery.join(' ') : String(rawQuery || '');
+    const { yearFrom, yearTo, priceFrom, priceTo } = req.query;
+    
+    const sourcesArr = sources.split(',').map(s => s.trim()).filter(Boolean);
 
-  const cacheKey = `ua:${sources}:${query}:${yearFrom}:${yearTo}:${priceFrom}:${priceTo}`;
-  const cached = getCached(cacheKey);
-  if (cached) { console.log(`[cache HIT] ${cacheKey}`); return res.json(cached); }
+    const cacheKey = `ua:${sources}:${query}:${yearFrom}:${yearTo}:${priceFrom}:${priceTo}`;
+    const cached = getCached(cacheKey);
+    if (cached) { console.log(`[cache HIT] ${cacheKey}`); return res.json(cached); }
 
-  console.log(`[ua] sources=${sourcesArr} query=${query} years=${yearFrom}-${yearTo}`);
+    console.log(`[ua] sources=${sourcesArr} query=${query} years=${yearFrom}-${yearTo}`);
 
-  const tasks = sourcesArr.map(src => {
-    if (src === 'rst')    return scrapeRst(query, yearFrom, yearTo).catch(e => { console.error('[rst]',e.message); return []; });
-    if (src === 'olx')    return scrapeOlx(query, yearFrom, yearTo).catch(e => { console.error('[olx]',e.message); return []; });
-    if (src === 'carsua') return scrapeCarsUa(query, yearFrom, yearTo).catch(e => { console.error('[carsua]',e.message); return []; });
-    return Promise.resolve([]);
-  });
+    const tasks = sourcesArr.map(src => {
+      if (src === 'rst')    return scrapeRst(query, yearFrom, yearTo).catch(e => { console.error('[rst]',e.message); return []; });
+      if (src === 'olx')    return scrapeOlx(query, yearFrom, yearTo).catch(e => { console.error('[olx]',e.message); return []; });
+      if (src === 'carsua') return scrapeCarsUa(query, yearFrom, yearTo).catch(e => { console.error('[carsua]',e.message); return []; });
+      return Promise.resolve([]);
+    });
 
-  let allAds = (await Promise.allSettled(tasks))
-    .flatMap(r => r.status === 'fulfilled' ? r.value : []);
+    let allAds = (await Promise.allSettled(tasks))
+      .flatMap(r => r.status === 'fulfilled' ? r.value : []);
 
-  // Extract make/model from query string for filtering
-  const parts = query.trim().split(' ');
-  const make  = parts[0] || '';
-  const model = parts.slice(1).join(' ') || '';
-  allAds = applyFilters(allAds, { make, model, yearFrom, yearTo, priceFrom, priceTo });
+    // Extract make/model from query string for filtering
+    const parts = query.trim().split(' ');
+    const make  = parts[0] || '';
+    const model = parts.slice(1).join(' ') || '';
+    allAds = applyFilters(allAds, { make, model, yearFrom, yearTo, priceFrom, priceTo });
 
-  // Deduplicate before stats
-  allAds = deduplicateAds(allAds);
+    // Deduplicate before stats
+    allAds = deduplicateAds(allAds);
 
-  const stats = calcStats(allAds);
-  const result = { listings: allAds, stats };
-  setCache(cacheKey, result);
-  res.json(result);
+    const stats = calcStats(allAds);
+    const result = { listings: allAds, stats };
+    setCache(cacheKey, result);
+    res.json(result);
+  } catch (err) {
+    console.error('[ua] API Error:', err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
 });
 
 /* ── /api/irish-prices (legacy compat) ─────────── */

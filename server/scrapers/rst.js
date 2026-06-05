@@ -1,5 +1,6 @@
 import { getBrowser } from './puppeteerSetup.js';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 import { getExchangeRates } from '../services/exchangeRateService.js';
 
 /**
@@ -28,9 +29,10 @@ export async function scrapeRst(query, yearFrom, yearTo) {
   
   if (params.toString()) url += `?${params.toString()}`;
 
+  let page;
   try {
     const browser = await getBrowser();
-    const page = await browser.newPage();
+    page = await browser.newPage();
     
     await page.setRequestInterception(true);
     page.on('request', (req) => {
@@ -45,13 +47,16 @@ export async function scrapeRst(query, yearFrom, yearTo) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     
     const content = await page.content();
-    await page.close();
     const ads = parseRst(content, query, rates, yearFrom, yearTo);
     console.log(`[rst] Got ${ads.length} ads via Puppeteer`);
     return ads;
   } catch (err) {
     console.error('[rst] scrapeRst failed:', err.message);
     return [];
+  } finally {
+    if (page && !page.isClosed()) {
+      await page.close().catch(() => {});
+    }
   }
 }
 
@@ -84,8 +89,11 @@ export function parseRst(htmlContent, query, rates, yearFrom, yearTo) {
 
       const priceEur = Math.round(priceNum * rates.usdToEur);
 
+      const rawId = href.match(/-(\d+)\.html/)?.[1] || titleText;
+      const hash = crypto.createHash('md5').update(rawId + priceNum).digest('hex').substring(0, 8);
+
       ads.push({
-        id: `rst_${href.match(/-(\d+)\.html/)?.[1] || Math.random()}`,
+        id: `rst_${hash}`,
         source: 'RST.ua',
         sourceUrl: `https://rst.ua${href}`,
         make,

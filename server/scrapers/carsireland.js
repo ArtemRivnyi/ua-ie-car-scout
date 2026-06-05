@@ -1,5 +1,6 @@
 import { getBrowser } from './puppeteerSetup.js';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 
 /**
  * Fetches car listings from CarsIreland.ie using Puppeteer.
@@ -16,9 +17,10 @@ export async function scrapeCarsIreland(make, model, yearFrom, yearTo) {
   const queryString = params.toString() ? `?${params.toString()}` : '';
   const url = `https://www.carsireland.ie/${urlPath}${queryString}`;
 
+  let page;
   try {
     const browser = await getBrowser();
-    const page = await browser.newPage();
+    page = await browser.newPage();
     
     await page.setRequestInterception(true);
     page.on('request', (req) => {
@@ -33,8 +35,6 @@ export async function scrapeCarsIreland(make, model, yearFrom, yearTo) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     
     const content = await page.content();
-    const $ = cheerio.load(content);
-    await page.close();
 
     // Fallback HTML parsing since it's an Angular SPA now
     const ads = parseCarsIreland(content, make, model, yearFrom, yearTo);
@@ -43,6 +43,10 @@ export async function scrapeCarsIreland(make, model, yearFrom, yearTo) {
   } catch (err) {
     console.error('[carsireland] scrapeCarsIreland failed:', err.message);
     return [];
+  } finally {
+    if (page && !page.isClosed()) {
+      await page.close().catch(() => {});
+    }
   }
 }
 
@@ -76,8 +80,11 @@ export function parseCarsIreland(htmlContent, make, model, yearFrom, yearTo) {
     if (yearTo && (!year || year > parseInt(yearTo, 10))) return;
 
     if (priceEur > 0 && href) {
+      const rawId = href.split('?')[0].replace(/\D/g, '') || href;
+      const hash = crypto.createHash('md5').update(rawId).digest('hex').substring(0, 8);
+
       ads.push({
-        id: `ci_${href.split('?')[0].replace(/\D/g, '') || Math.random()}`,
+        id: `ci_${hash}`,
         source: 'CarsIreland',
         sourceUrl: `https://www.carsireland.ie${href}`,
         make,

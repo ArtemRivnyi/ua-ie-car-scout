@@ -1,5 +1,6 @@
 import { getBrowser } from './puppeteerSetup.js';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 
 /**
  * Fetches car listings from DoneDeal.ie using Puppeteer (Stealth).
@@ -17,9 +18,10 @@ export async function scrapeDoneDeal(modelQuery, yearFrom, yearTo, pageSize = 20
   if (yearFrom) url += `&year_from=${yearFrom}`;
   if (yearTo) url += `&year_to=${yearTo}`;
   
+  let page;
   try {
     const browser = await getBrowser();
-    const page = await browser.newPage();
+    page = await browser.newPage();
     
     // Fast abort for images/fonts/css to speed up scraping
     await page.setRequestInterception(true);
@@ -37,8 +39,6 @@ export async function scrapeDoneDeal(modelQuery, yearFrom, yearTo, pageSize = 20
     
     const content = await page.content();
     const $ = cheerio.load(content);
-    
-    await page.close(); // Close page to free memory
 
     const script = $('#__NEXT_DATA__').html();
     const adsList = parseDoneDeal(script, modelQuery, yearFrom, yearTo);
@@ -46,6 +46,10 @@ export async function scrapeDoneDeal(modelQuery, yearFrom, yearTo, pageSize = 20
   } catch (err) {
     console.error('[donedeal] scrapeDoneDeal failed:', err.message);
     return [];
+  } finally {
+    if (page && !page.isClosed()) {
+      await page.close().catch(() => {});
+    }
   }
 }
 
@@ -154,8 +158,11 @@ function normalizeDoneDealAd(ad) {
     make = header;
   }
 
+  const rawId = ad.id || ad.adId || (header + priceEur);
+  const hash = crypto.createHash('md5').update(String(rawId)).digest('hex').substring(0, 8);
+
   return {
-    id: `donedeal_${ad.id || ad.adId || Math.random().toString(36).slice(2)}`,
+    id: `donedeal_${hash}`,
     source: 'DoneDeal',
     sourceUrl: ad.friendlyUrl
       ? (ad.friendlyUrl.startsWith('http') ? ad.friendlyUrl : `https://www.donedeal.ie${ad.friendlyUrl}`)
