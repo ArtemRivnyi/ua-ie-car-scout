@@ -13,6 +13,7 @@ export async function getBrowser() {
   console.log('[puppeteer] Launching hidden browser instance...');
   browserInstance = await puppeteer.launch({
     headless: true,
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
