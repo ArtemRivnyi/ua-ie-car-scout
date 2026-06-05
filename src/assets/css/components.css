@@ -129,6 +129,27 @@
   color: var(--color-text-primary);
 }
 
+@media (max-width: 768px) {
+  .navbar {
+    height: auto;
+    min-height: var(--nav-height);
+    padding: var(--space-3) 0;
+  }
+  .navbar__inner {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  .navbar__nav {
+    width: 100%;
+    justify-content: center;
+    gap: var(--space-2);
+    order: 3;
+    padding-top: var(--space-3);
+    margin-top: var(--space-1);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+}
+
 /* ── Buttons ── */
 .btn {
   display: inline-flex;
