@@ -135,12 +135,18 @@ app.get('/api/scrape/ie', async (req, res) => {
 
 /* ── /api/test-puppeteer ──────────────────────────── */
 app.get('/api/test-puppeteer', async (req, res) => {
+  let page;
   try {
     const browser = await import('./scrapers/puppeteerSetup.js').then(m => m.getBrowser());
-    const version = await browser.version();
-    res.json({ status: 'ok', version });
+    page = await browser.newPage();
+    await page.goto('https://www.olx.ua/uk/', { waitUntil: 'networkidle2', timeout: 15000 });
+    const title = await page.title();
+    const content = await page.content();
+    res.json({ status: 'ok', title, contentSnippet: content.substring(0, 200) });
   } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message, stack: err.stack });
+    res.status(500).json({ status: 'error', message: err.message });
+  } finally {
+    if (page) await page.close().catch(()=>{});
   }
 });
 
