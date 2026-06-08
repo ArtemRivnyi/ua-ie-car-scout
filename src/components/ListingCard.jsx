@@ -15,8 +15,6 @@ export default function ListingCard({ listing, onSave, onCalc, saved, ieMarketAv
     const imp = calculateImportCost({
       carPrice:     listing.priceEur,
       carYear:      listing.year || 2000,
-      shippingCost: 900,
-      miscCosts:    500,
     });
     totalLanded = imp.totalLanded;
 
