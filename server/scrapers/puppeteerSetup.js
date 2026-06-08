@@ -14,6 +14,13 @@ export async function getBrowser() {
     return launchPromise;
   }
   
+  // Render Free Tier Native Node environment does not support Puppeteer without Docker.
+  // Instantly reject to force HTTP fallback and prevent indefinite freezing.
+  if (process.env.RENDER === 'true') {
+    console.log('[puppeteer] Skipping Puppeteer on Render Native environment. Using HTTP fallback.');
+    return Promise.reject(new Error('Puppeteer disabled on Render Native.'));
+  }
+  
   console.log('[puppeteer] Launching hidden browser instance...');
   
   const launchOptions = {
