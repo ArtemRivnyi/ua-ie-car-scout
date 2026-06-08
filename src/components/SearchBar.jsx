@@ -63,7 +63,11 @@ export default function SearchBar({ onResults, onStats, onIrishResults, onExtern
               if (matched) modelId = matched.modelId;
             }
           }
-          if (!q) q = preset.searchTerms?.[0] || preset.make || '';
+          if (markId) {
+            q = ''; // Don't use text search if we have exact markId, AutoRIA text search is buggy
+          } else if (!q) {
+            q = preset.searchTerms?.[0] || preset.make || '';
+          }
         }
 
         promises.push(
