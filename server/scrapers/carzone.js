@@ -51,8 +51,21 @@ export async function scrapeCarzone(make, model, yearFrom, yearTo) {
     console.log(`[carzone] Got ${ads.length} ads via Puppeteer`);
     return ads;
   } catch (err) {
-    console.error('[carzone] scrapeCarzone failed:', err.message);
-    return [];
+    console.error('[carzone] Puppeteer failed, falling back to HTTP:', err.message);
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept-Language': 'en-IE,en-GB;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP status ${res.status}`);
+      const content = await res.text();
+      return parseCarzone(content, make, model, yearFrom, yearTo);
+    } catch (fetchErr) {
+      console.error('[carzone] HTTP fallback failed:', fetchErr.message);
+      return [];
+    }
   } finally {
     if (page && !page.isClosed()) {
       await page.close().catch(() => {});

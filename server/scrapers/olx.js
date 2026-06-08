@@ -51,8 +51,20 @@ export async function scrapeOlx(query, yearFrom, yearTo) {
     const ads = parseOlx(content, query, rates, yearFrom, yearTo);
     return ads;
   } catch (err) {
-    console.error('[olx] scrapeOlx failed:', err.message);
-    return [];
+    console.error('[olx] Puppeteer failed, falling back to HTTP:', err.message);
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP status ${res.status}`);
+      const content = await res.text();
+      return parseOlx(content, query, rates, yearFrom, yearTo);
+    } catch (fetchErr) {
+      console.error('[olx] HTTP fallback failed:', fetchErr.message);
+      return [];
+    }
   } finally {
     if (page && !page.isClosed()) {
       await page.close().catch(() => {});

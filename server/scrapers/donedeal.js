@@ -55,8 +55,27 @@ export async function scrapeDoneDeal(modelQuery, yearFrom, yearTo, pageSize = 20
 
     return adsList;
   } catch (err) {
-    console.error('[donedeal] scrapeDoneDeal failed:', err.message);
-    return [];
+    console.error('[donedeal] Puppeteer failed, falling back to HTTP:', err.message);
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept-Language': 'en-IE,en-GB;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP status ${res.status}`);
+      const content = await res.text();
+      const $ = cheerio.load(content);
+      const script = $('#__NEXT_DATA__').html();
+      let adsList = parseDoneDeal(script, modelQuery, yearFrom, yearTo);
+      if (adsList.length === 0) {
+        adsList = parseDoneDealHtml(content, modelQuery, yearFrom, yearTo);
+      }
+      return adsList;
+    } catch (fetchErr) {
+      console.error('[donedeal] HTTP fallback failed:', fetchErr.message);
+      return [];
+    }
   } finally {
     if (page && !page.isClosed()) {
       await page.close().catch(() => {});

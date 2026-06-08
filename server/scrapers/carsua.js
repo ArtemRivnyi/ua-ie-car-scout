@@ -41,8 +41,21 @@ export async function scrapeCarsUa(query, yearFrom, yearTo) {
     console.log(`[carsua] Got ${ads.length} ads via Puppeteer`);
     return ads;
   } catch (err) {
-    console.error('[carsua] scrapeCarsUa failed:', err.message);
-    return [];
+    console.error('[carsua] Puppeteer failed, falling back to HTTP:', err.message);
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept-Language': 'uk-UA,uk;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP status ${res.status}`);
+      const content = await res.text();
+      return parseCarsUa(content, make, model, rates, yearFrom, yearTo);
+    } catch (fetchErr) {
+      console.error('[carsua] HTTP fallback failed:', fetchErr.message);
+      return [];
+    }
   } finally {
     if (page && !page.isClosed()) {
       await page.close().catch(() => {});
