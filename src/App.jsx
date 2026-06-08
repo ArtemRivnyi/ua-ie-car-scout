@@ -124,6 +124,13 @@ export default function App() {
               <h1 className="search-section__title">Find your next car in Ukraine</h1>
               <p className="search-section__sub">Real-time listings. Accurate import cost to Ireland.</p>
 
+              <div className="alert alert--info" style={{marginBottom:'var(--space-4)', fontSize:'var(--text-xs)', textAlign:'left', border:'1px solid rgba(59, 130, 246, 0.3)'}}>
+                <strong>⚠️ Note on live web version:</strong> Due to Cloudflare protections and Render.com free-tier memory limits, 
+                Irish websites (DoneDeal, CarsIreland, Carzone) and some UA sites may return 0 results here. 
+                <br/>
+                <em>To unlock full scraping power (100% of websites), run this project locally on your PC via <code>npm run dev</code>.</em>
+              </div>
+
               <ToyotaQuickFilter onSelect={setSelectedPreset} selected={selectedPreset?.id} />
 
               {/* Status banners */}
