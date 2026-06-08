@@ -12,7 +12,9 @@
  *  GET /api/categories/{id}/marks  — get make/model IDs
  */
 
-const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/api\/?$/, '') + '/api';
+const API_BASE = import.meta.env.VITE_API_BASE
+  ? import.meta.env.VITE_API_BASE.replace(/\/api\/?$/, '') + '/api'
+  : 'https://ua-ie-car-scout-api.onrender.com/api';
 const API_KEY = import.meta.env.VITE_AUTORIA_API_KEY;
 
 /**
@@ -92,8 +94,9 @@ export async function getAutoRiaListing(autoId) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`AUTO.RIA listing error: ${res.status}`);
     const data = await res.json();
-
-    return normalizeAutoRiaListing(data);
+    
+    const rates = await getLiveRates();
+    return normalizeAutoRiaListing(data, rates.usdToEur || 0.92);
   } catch (err) {
     console.error(`[autoRiaService] getAutoRiaListing(${autoId}) failed:`, err);
     return null;
@@ -101,14 +104,35 @@ export async function getAutoRiaListing(autoId) {
 }
 
 /**
+ * Fetch live exchange rates from our backend
+ */
+let cachedRates = null;
+let lastRatesFetch = 0;
+async function getLiveRates() {
+  const now = Date.now();
+  if (cachedRates && now - lastRatesFetch < 3600000) {
+    return cachedRates;
+  }
+  try {
+    const res = await fetch(`${API_BASE}/currency`);
+    if (res.ok) {
+      cachedRates = await res.json();
+      lastRatesFetch = now;
+      return cachedRates;
+    }
+  } catch (err) {
+    console.warn('[autoRiaService] failed to fetch live rates:', err);
+  }
+  return { usdToEur: 0.92 }; // fallback
+}
+
+/**
  * Normalize AUTO.RIA raw listing to our internal format.
  * @param {object} raw
+ * @param {number} usdToEur
  * @returns {NormalizedListing}
  */
-function normalizeAutoRiaListing(raw) {
-  // AUTO.RIA prices are in USD — convert roughly to EUR
-  // TODO: use live exchange rate from /api/currency
-  const USD_TO_EUR = 0.92;
+function normalizeAutoRiaListing(raw, usdToEur) {
   const priceUsd = raw.USD || raw.price?.USD || 0;
 
   // Photos can appear in different fields depending on API version
@@ -130,7 +154,7 @@ function normalizeAutoRiaListing(raw) {
     make: raw.markName || '',
     model: raw.modelName || '',
     year: raw.year || null,
-    priceEur: Math.round(priceUsd * USD_TO_EUR),
+    priceEur: Math.round(priceUsd * usdToEur),
     priceOriginal: priceUsd,
     priceOriginalCurrency: 'USD',
     engineCc: raw.engineVolume ? raw.engineVolume * 1000 : null,
