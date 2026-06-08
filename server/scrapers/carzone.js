@@ -4,6 +4,7 @@ import crypto from 'crypto';
 
 /**
  * Fetches car listings from Carzone.ie using Puppeteer.
+ * Carzone is a SPA — requires networkidle2 and waiting for custom elements.
  */
 export async function scrapeCarzone(make, model, yearFrom, yearTo) {
   let makeF = make ? make.charAt(0).toUpperCase() + make.slice(1).toLowerCase() : '';
@@ -24,7 +25,7 @@ export async function scrapeCarzone(make, model, yearFrom, yearTo) {
     
     await page.setRequestInterception(true);
     page.on('request', (req) => {
-      if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+      if (['image', 'font', 'media'].includes(req.resourceType())) {
         req.abort();
       } else {
         req.continue();
@@ -32,8 +33,19 @@ export async function scrapeCarzone(make, model, yearFrom, yearTo) {
     });
 
     console.log(`[carzone] Navigating to ${url}...`);
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // Use networkidle2 instead of domcontentloaded — Carzone is a SPA
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
     
+    // Wait for SPA to render the custom web components or a no-results indicator
+    try {
+      await page.waitForSelector(
+        'stock-summary-item, [class*="listing-card"], [class*="result-card"], .no-results, [class*="no-results"]',
+        { timeout: 15000 }
+      );
+    } catch (waitErr) {
+      console.warn('[carzone] Timed out waiting for listing elements, trying with current DOM...');
+    }
+
     const content = await page.content();
     const ads = parseCarzone(content, make, model, yearFrom, yearTo);
     console.log(`[carzone] Got ${ads.length} ads via Puppeteer`);
@@ -51,7 +63,16 @@ export async function scrapeCarzone(make, model, yearFrom, yearTo) {
 export function parseCarzone(htmlContent, make, model, yearFrom, yearTo) {
   const $ = cheerio.load(htmlContent);
   let ads = [];
-  $('stock-summary-item').each((i, el) => {
+
+  // Primary: try the custom web component selector
+  let cards = $('stock-summary-item');
+  
+  // Fallback: try generic card/listing selectors if SPA rendered differently
+  if (cards.length === 0) {
+    cards = $('[class*="listing-card"], [class*="result-card"], [class*="stock-item"], a[href*="/used-cars/"]').closest('[class*="card"], [class*="item"], li');
+  }
+
+  cards.each((i, el) => {
     const fullText = $(el).text().replace(/\s+/g, ' ');
     
     // Get price
@@ -62,6 +83,10 @@ export function parseCarzone(htmlContent, make, model, yearFrom, yearTo) {
     // Get link
     let href = $(el).find('a[href*="/used-cars/"], a[href*="/car-details/"]').first().attr('href');
     if (!href) href = $(el).find('a').first().attr('href');
+    if (!href) {
+      // The element itself might be a link
+      href = $(el).is('a') ? $(el).attr('href') : null;
+    }
     
     if (href && !href.startsWith('http')) {
       href = href.startsWith('/') ? href : `/${href}`;

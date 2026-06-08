@@ -5,18 +5,19 @@ import { getExchangeRates } from '../services/exchangeRateService.js';
 
 /**
  * Fetches car listings from RST.ua using Puppeteer.
+ * 
+ * Correct URL structure: https://rst.ua/oldcars/car/toyota/corolla/?year=1985-1995
+ * Note the /car/ segment between /oldcars/ and the make.
  */
 export async function scrapeRst(query, yearFrom, yearTo) {
-  // RST search URLs are quite complex, we will use a general search and filter
-  // e.g. https://rst.ua/oldcars/toyota/corolla/?year=1990-1995
-  
   // Extract make and model from query
   const parts = (query || '').toLowerCase().split(' ');
   const make = parts[0] || '';
   const model = parts[1] || '';
   const rates = await getExchangeRates();
   
-  let url = `https://rst.ua/oldcars/`;
+  // RST URL structure: /oldcars/car/{make}/{model}/?year={from}-{to}
+  let url = `https://rst.ua/oldcars/car/`;
   if (make) url += `${make}/`;
   if (model) url += `${model}/`;
   
@@ -44,7 +45,7 @@ export async function scrapeRst(query, yearFrom, yearTo) {
     });
 
     console.log(`[rst] Navigating to ${url}...`);
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
     
     const content = await page.content();
     const ads = parseRst(content, query, rates, yearFrom, yearTo);
@@ -89,7 +90,7 @@ export function parseRst(htmlContent, query, rates, yearFrom, yearTo) {
 
       const priceEur = Math.round(priceNum * rates.usdToEur);
 
-      const rawId = href.match(/-(\d+)\.html/)?.[1] || titleText;
+      const rawId = href.match(/-(\\d+)\\.html/)?.[1] || titleText;
       const hash = crypto.createHash('md5').update(rawId + priceNum).digest('hex').substring(0, 8);
 
       ads.push({

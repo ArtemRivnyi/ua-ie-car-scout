@@ -10,7 +10,7 @@
     "server": "node server/index.js",
     "dev:all": "node node_modules/concurrently/dist/bin/concurrently.js \"npm run dev\" \"npm run server\"",
     "test": "node --test test/scrapers.test.js",
-    "test:api": "node --test tests/api.test.js tests/api_integration.test.js tests/dedup.test.js tests/importCalcService.test.js tests/priceService.test.js tests/parsers.test.js",
+    "test:api": "node --test tests/api.test.js tests/importCalcService.test.js tests/dedup.test.js tests/parsers.test.js tests/priceService.test.js tests/exchangeRate.test.js tests/filters.test.js",
     "test:ui": "vitest run",
     "test:all": "npm run test:api && npm run test:ui && npm run test",
     "test:coverage": "c8 npm run test:all"

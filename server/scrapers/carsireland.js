@@ -4,6 +4,8 @@ import crypto from 'crypto';
 
 /**
  * Fetches car listings from CarsIreland.ie using Puppeteer.
+ * CarsIreland is an Angular SPA — requires networkidle2 and waiting for
+ * Angular-rendered components.
  */
 export async function scrapeCarsIreland(make, model, yearFrom, yearTo) {
   const params = new URLSearchParams();
@@ -24,7 +26,7 @@ export async function scrapeCarsIreland(make, model, yearFrom, yearTo) {
     
     await page.setRequestInterception(true);
     page.on('request', (req) => {
-      if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+      if (['image', 'font', 'media'].includes(req.resourceType())) {
         req.abort();
       } else {
         req.continue();
@@ -32,11 +34,21 @@ export async function scrapeCarsIreland(make, model, yearFrom, yearTo) {
     });
 
     console.log(`[carsireland] Navigating to ${url}...`);
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // Use networkidle2 — Angular SPA needs full rendering
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
     
+    // Wait for Angular to render listings or show no-results
+    try {
+      await page.waitForSelector(
+        '.listing, cids-o-listing-card, [class*="listing"], [class*="car-card"], .no-results, [class*="no-results"]',
+        { timeout: 15000 }
+      );
+    } catch (waitErr) {
+      console.warn('[carsireland] Timed out waiting for Angular rendering, trying with current DOM...');
+    }
+
     const content = await page.content();
 
-    // Fallback HTML parsing since it's an Angular SPA now
     const ads = parseCarsIreland(content, make, model, yearFrom, yearTo);
     console.log(`[carsireland] Got ${ads.length} ads via Puppeteer`);
     return ads;
@@ -53,7 +65,24 @@ export async function scrapeCarsIreland(make, model, yearFrom, yearTo) {
 export function parseCarsIreland(htmlContent, make, model, yearFrom, yearTo) {
   const $ = cheerio.load(htmlContent);
   let ads = [];
-  $('.listing.ng-star-inserted, cids-o-listing-card').each((i, el) => {
+
+  // Try multiple selectors — Angular SPA may render different component structures
+  let cards = $('.listing.ng-star-inserted, cids-o-listing-card');
+  
+  // Fallback: try generic selectors if Angular components didn't match
+  if (cards.length === 0) {
+    cards = $('[class*="listing-card"], [class*="car-card"], [class*="vehicle-card"], a[href*="/used-cars/"]').closest('[class*="card"], [class*="listing"], li, article');
+  }
+
+  // Second fallback: any element that looks like a listing with a price
+  if (cards.length === 0) {
+    cards = $('[class*="listing"]').filter((i, el) => {
+      const text = $(el).text();
+      return text.match(/€\s*\d/) && text.match(/\b(19|20)\d{2}\b/);
+    });
+  }
+
+  cards.each((i, el) => {
     // Get price
     const priceText = $(el).find('[class*="price"]').first().text().trim() || $(el).text();
     const priceMatch = priceText.match(/€\s*(\d[\d\s,]*)/);
@@ -61,6 +90,9 @@ export function parseCarsIreland(htmlContent, make, model, yearFrom, yearTo) {
     
     // Get link
     let href = $(el).find('a').first().attr('href');
+    if (!href) {
+      href = $(el).is('a') ? $(el).attr('href') : null;
+    }
     if (href && !href.startsWith('http')) {
       href = href.startsWith('/') ? href : `/${href}`;
     }
@@ -71,10 +103,13 @@ export function parseCarsIreland(htmlContent, make, model, yearFrom, yearTo) {
     const year = yearMatch ? parseInt(yearMatch[0], 10) : null;
     
     // Get image
-    const bgSpan = $(el).find('span[style*="background-image"]').first();
-    const style = bgSpan.attr('style') || '';
-    const imgMatch = style.match(/url\("?([^"\)]+)"?\)/);
-    const imgUrl = imgMatch ? imgMatch[1] : null;
+    let imgUrl = $(el).find('img').first().attr('src');
+    if (!imgUrl) {
+      const bgSpan = $(el).find('span[style*="background-image"], div[style*="background-image"]').first();
+      const style = bgSpan.attr('style') || '';
+      const imgMatch = style.match(/url\("?([^"\)]+)"?\)/);
+      imgUrl = imgMatch ? imgMatch[1] : null;
+    }
     
     if (yearFrom && (!year || year < parseInt(yearFrom, 10))) return;
     if (yearTo && (!year || year > parseInt(yearTo, 10))) return;

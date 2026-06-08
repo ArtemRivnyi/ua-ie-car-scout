@@ -100,7 +100,7 @@ export default function App() {
 
             <div className="navbar__actions">
               <button onClick={toggleLanguage} className="lang-badge">
-                {i18n.language === 'en' ? '🇺🇦 RU' : '🇮🇪 EN'}
+                {i18n.language === 'en' ? 'EN 🇮🇪' : 'RU 🇺🇦'}
               </button>
             </div>
           </div>

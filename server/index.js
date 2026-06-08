@@ -205,11 +205,10 @@ function applyFilters(ads, { make, model, yearFrom, yearTo, priceFrom, priceTo }
   const pt = priceTo   ? parseFloat(priceTo)     : null;
 
   return ads.filter(ad => {
-    // Year filter — strict: ignore ads without year only if range is set
-    if (yf !== null && !ad.year) return false;
-    if (yt !== null && !ad.year) return false;
-    if (yf !== null && ad.year < yf) return false;
-    if (yt !== null && ad.year > yt) return false;
+    // Year filter — include ads without year (don't silently drop them),
+    // only exclude ads with a known year that falls outside the range
+    if (yf !== null && ad.year && ad.year < yf) return false;
+    if (yt !== null && ad.year && ad.year > yt) return false;
 
     // Price filter
     if (pf !== null && ad.priceEur > 0 && ad.priceEur < pf) return false;

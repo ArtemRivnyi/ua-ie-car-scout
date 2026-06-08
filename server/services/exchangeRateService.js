@@ -27,11 +27,13 @@ export async function getExchangeRates() {
       cachedRates = {
         usdToEur: eurRate,
         uahToEur: eurRate / uahRate,
-        uahToUsd: 1 / uahRate
+        uahToUsd: 1 / uahRate,
+        source: 'open.er-api.com',
+        lastUpdated: new Date().toISOString(),
       };
       lastFetchTime = Date.now();
       
-      console.log(`[ExchangeRates] Updated rates: USD->EUR=${cachedRates.usdToEur.toFixed(3)}, UAH->EUR=${cachedRates.uahToEur.toFixed(4)}`);
+      console.log(`[ExchangeRates] Updated rates: USD->EUR=${cachedRates.usdToEur.toFixed(3)}, UAH->EUR=${cachedRates.uahToEur.toFixed(4)}, UAH/USD=${uahRate.toFixed(1)}`);
       return cachedRates;
     } else {
       throw new Error('Invalid rate format from API');
@@ -40,11 +42,15 @@ export async function getExchangeRates() {
     console.error('[ExchangeRates] Error fetching rates, using fallback values:', err.message);
     
     // Fallback to hardcoded estimates if API fails
+    // Updated to mid-2026 approximate rates (NBU official ~41.5 UAH/USD)
     if (!cachedRates) {
+      console.warn('[ExchangeRates] ⚠️ Using FALLBACK hardcoded rates — prices may be inaccurate!');
       cachedRates = {
         usdToEur: 0.92,
-        uahToEur: 0.92 / 41, // ~41 UAH per USD
-        uahToUsd: 1 / 41
+        uahToEur: 0.92 / 41.5, // ~41.5 UAH per USD (mid-2026 NBU rate)
+        uahToUsd: 1 / 41.5,
+        source: 'fallback',
+        lastUpdated: '2026-06-01T00:00:00Z', // hardcoded baseline date
       };
     }
     return cachedRates;

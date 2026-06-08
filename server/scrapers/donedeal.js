@@ -4,12 +4,14 @@ import crypto from 'crypto';
 
 /**
  * Fetches car listings from DoneDeal.ie using Puppeteer (Stealth).
- * This bypasses Datadome/Cloudflare by loading the search page 
- * and extracting the NEXT_DATA JSON blob.
+ * Extracts data from __NEXT_DATA__ JSON blob, with multiple path fallbacks
+ * since DoneDeal periodically updates their Next.js structure.
  */
 
 /**
  * @param {string} modelQuery — e.g. "Toyota AE86"
+ * @param {number|string} [yearFrom]
+ * @param {number|string} [yearTo]
  * @param {number} [pageSize=20]
  * @returns {Promise<NormalizedListing[]>}
  */
@@ -27,7 +29,7 @@ export async function scrapeDoneDeal(modelQuery, yearFrom, yearTo, pageSize = 20
     await page.setRequestInterception(true);
     page.on('request', (req) => {
       const type = req.resourceType();
-      if (['image', 'stylesheet', 'font', 'media'].includes(type)) {
+      if (['image', 'font', 'media'].includes(type)) {
         req.abort();
       } else {
         req.continue();
@@ -35,13 +37,22 @@ export async function scrapeDoneDeal(modelQuery, yearFrom, yearTo, pageSize = 20
     });
 
     console.log(`[donedeal] Navigating to ${url}...`);
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // Use networkidle2 — DoneDeal's Next.js may hydrate after domcontentloaded
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
     
     const content = await page.content();
     const $ = cheerio.load(content);
 
+    // Try NEXT_DATA approach first
     const script = $('#__NEXT_DATA__').html();
-    const adsList = parseDoneDeal(script, modelQuery, yearFrom, yearTo);
+    let adsList = parseDoneDeal(script, modelQuery, yearFrom, yearTo);
+    
+    // If NEXT_DATA yields nothing, try HTML DOM scraping as fallback
+    if (adsList.length === 0) {
+      console.log('[donedeal] NEXT_DATA yielded 0 results, trying HTML fallback...');
+      adsList = parseDoneDealHtml(content, modelQuery, yearFrom, yearTo);
+    }
+
     return adsList;
   } catch (err) {
     console.error('[donedeal] scrapeDoneDeal failed:', err.message);
@@ -55,6 +66,7 @@ export async function scrapeDoneDeal(modelQuery, yearFrom, yearTo, pageSize = 20
 
 /**
  * Pure parsing function for DoneDeal NEXT_DATA script content.
+ * Tries multiple data paths since DoneDeal updates their structure periodically.
  */
 export function parseDoneDeal(scriptContent, modelQuery, yearFrom, yearTo) {
   if (!scriptContent) {
@@ -70,14 +82,87 @@ export function parseDoneDeal(scriptContent, modelQuery, yearFrom, yearTo) {
     return [];
   }
 
-  const ads = data?.props?.pageProps?.ads || [];
-  console.log(`[donedeal] Got ${ads.length} ads for "${modelQuery}" via Puppeteer`);
+  // Try multiple known paths — DoneDeal updates these periodically
+  const ads = 
+    data?.props?.pageProps?.ads ||
+    data?.props?.pageProps?.initialProps?.ads ||
+    data?.props?.pageProps?.searchResults?.ads ||
+    data?.props?.pageProps?.adsData?.ads ||
+    data?.props?.pageProps?.data?.ads ||
+    [];
+  
+  console.log(`[donedeal] Got ${ads.length} ads for "${modelQuery}" via NEXT_DATA`);
 
   let adsList = ads.map(ad => normalizeDoneDealAd(ad)).filter(Boolean);
   if (yearFrom) adsList = adsList.filter(ad => ad.year && ad.year >= parseInt(yearFrom, 10));
   if (yearTo) adsList = adsList.filter(ad => ad.year && ad.year <= parseInt(yearTo, 10));
   
   return adsList;
+}
+
+/**
+ * HTML DOM fallback parser for DoneDeal when NEXT_DATA is unavailable or empty.
+ */
+export function parseDoneDealHtml(htmlContent, modelQuery, yearFrom, yearTo) {
+  const $ = cheerio.load(htmlContent);
+  const ads = [];
+
+  // DoneDeal card selectors — try multiple patterns
+  const cards = $('a[href*="/cars/"], a[href*="/ad/"], [class*="card"][class*="listing"], [data-testid*="card"]');
+
+  cards.each((i, el) => {
+    try {
+      const href = $(el).is('a') ? $(el).attr('href') : $(el).find('a').first().attr('href');
+      if (!href || !href.includes('/')) return;
+
+      const fullText = $(el).text().replace(/\s+/g, ' ').trim();
+      
+      // Extract price
+      const priceMatch = fullText.match(/€\s*([\d,]+)/);
+      const priceEur = priceMatch ? parseInt(priceMatch[1].replace(/,/g, ''), 10) : 0;
+      if (!priceEur) return;
+
+      // Extract year
+      const yearMatch = fullText.match(/\b(19|20)\d{2}\b/);
+      const year = yearMatch ? parseInt(yearMatch[0], 10) : null;
+
+      if (yearFrom && (!year || year < parseInt(yearFrom, 10))) return;
+      if (yearTo && (!year || year > parseInt(yearTo, 10))) return;
+
+      // Extract image
+      let img = $(el).find('img').first().attr('src');
+      if (!img) {
+        const bgEl = $(el).find('[style*="background-image"]').first();
+        const style = bgEl.attr('style') || '';
+        const imgMatch = style.match(/url\("?([^"\)]+)"?\)/);
+        img = imgMatch ? imgMatch[1] : null;
+      }
+
+      const rawId = href.match(/(\d{6,})/)?.[1] || href;
+      const hash = crypto.createHash('md5').update(String(rawId)).digest('hex').substring(0, 8);
+
+      const sourceUrl = href.startsWith('http') ? href : `https://www.donedeal.ie${href}`;
+
+      ads.push({
+        id: `donedeal_${hash}`,
+        source: 'DoneDeal',
+        sourceUrl,
+        make: '',
+        model: '',
+        year,
+        priceEur,
+        priceOriginal: priceEur,
+        priceOriginalCurrency: 'EUR',
+        photos: img ? [img] : [],
+        description: fullText.substring(0, 150).trim(),
+      });
+    } catch (e) {
+      // skip broken card
+    }
+  });
+
+  console.log(`[donedeal] Got ${ads.length} ads via HTML fallback`);
+  return ads;
 }
 
 /**

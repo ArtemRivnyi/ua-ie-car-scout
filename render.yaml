@@ -3,9 +3,11 @@ services:
   - type: web
     name: ua-ie-car-scout-api
     env: docker
+    dockerfilePath: ./Dockerfile
     region: frankfurt
     plan: free
     healthCheckPath: /api/health
+    startCommand: node server/index.js
     envVars:
       - key: NODE_ENV
         value: production

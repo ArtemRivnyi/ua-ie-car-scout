@@ -7,8 +7,12 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
 
   const [carPrice, setCarPrice] = useState(initialPrice || 5000);
   const [carYear,  setCarYear]  = useState(initialYear  || 1985);
-  const [shipping, setShipping] = useState(900);
+  const [shipping, setShipping] = useState(1400);
   const [misc,     setMisc]     = useState(500);
+  const [fuelType, setFuelType] = useState('petrol');
+  const [co2Gkm,   setCo2Gkm]  = useState('');
+  const [noxMgKm,  setNoxMgKm]  = useState('');
+  const [omspOverride, setOmspOverride] = useState('');
 
   useEffect(() => {
     if (initialPrice != null) setCarPrice(initialPrice);
@@ -20,6 +24,10 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
     carYear:  Number(carYear)  || 2000,
     shippingCost: Number(shipping) || 0,
     miscCosts:    Number(misc)     || 0,
+    fuelType,
+    co2Gkm:  co2Gkm !== '' ? Number(co2Gkm) : null,
+    noxMgKm: noxMgKm !== '' ? Number(noxMgKm) : null,
+    omsp:    omspOverride !== '' ? Number(omspOverride) : null,
   });
 
   const margin = ieMarketAvg ? calcMargin(breakdown.totalLanded, ieMarketAvg) : null;
@@ -75,11 +83,11 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
             </div>
           </div>
           <div className="field">
-            <label className="field__label">{t('calc.shipping')}</label>
+            <label className="field__label">{t('calc.shipping') || 'Shipping UA → IE (€)'}</label>
             <input
               type="number" className="input"
               value={shipping} onChange={e => setShipping(e.target.value)}
-              min="0" step="50" placeholder="900"
+              min="0" step="50" placeholder="1400"
             />
           </div>
           <div className="field">
@@ -88,6 +96,64 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
               type="number" className="input"
               value={misc} onChange={e => setMisc(e.target.value)}
               min="0" step="50" placeholder="500"
+            />
+          </div>
+
+          {/* Fuel type selector */}
+          <div className="field">
+            <label className="field__label">{t('calc.fuelType') || 'Fuel type'}</label>
+            <select className="input" value={fuelType} onChange={e => setFuelType(e.target.value)}>
+              <option value="petrol">⛽ Petrol</option>
+              <option value="diesel">🛢️ Diesel</option>
+              <option value="hybrid">🔋 Hybrid</option>
+              <option value="electric">⚡ Electric</option>
+            </select>
+          </div>
+
+          {/* CO₂ for precise VRT band */}
+          <div className="field">
+            <label className="field__label">
+              {t('calc.co2') || 'CO₂ (g/km, WLTP)'}
+              <span style={{fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 400, marginLeft: 4}}>
+                optional
+              </span>
+            </label>
+            <input
+              type="number" className="input"
+              value={co2Gkm} onChange={e => setCo2Gkm(e.target.value)}
+              min="0" max="500" step="1" placeholder="e.g. 120"
+            />
+          </div>
+
+          {/* NOx for diesel */}
+          {fuelType === 'diesel' && (
+            <div className="field">
+              <label className="field__label">
+                {t('calc.noxInput') || 'NOx (mg/km)'}
+                <span style={{fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 400, marginLeft: 4}}>
+                  for diesel NOx levy
+                </span>
+              </label>
+              <input
+                type="number" className="input"
+                value={noxMgKm} onChange={e => setNoxMgKm(e.target.value)}
+                min="0" max="500" step="1" placeholder="e.g. 80"
+              />
+            </div>
+          )}
+
+          {/* OMSP override */}
+          <div className="field">
+            <label className="field__label">
+              {t('calc.omsp') || 'OMSP override (€)'}
+              <span style={{fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 400, marginLeft: 4}}>
+                if known from Revenue
+              </span>
+            </label>
+            <input
+              type="number" className="input"
+              value={omspOverride} onChange={e => setOmspOverride(e.target.value)}
+              min="0" step="100" placeholder={`est. €${Math.round(breakdown.estimatedOmsp).toLocaleString()}`}
             />
           </div>
         </div>
@@ -104,9 +170,18 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
               <tr className="cost-row--tax">
                 <td className="cost-table__label">
                   {t('calc.vrt')}
-                  <span className="calc-rate" style={{color:'var(--color-text-muted)', fontSize:12}}>({(breakdown.vrtRate * 100).toFixed(0)}%)</span>
+                  <span className="calc-rate" style={{color:'var(--color-text-muted)', fontSize:12}}>
+                    ({(breakdown.vrtRate * 100).toFixed(1)}%{co2Gkm === '' ? ' est.' : ''} of OMSP)
+                  </span>
                 </td>
                 <td className="calc-value">{fmtEur(breakdown.vrtAmount)}</td>
+              </tr>
+              <tr style={{fontSize: 12, color: 'var(--color-text-muted)'}}>
+                <td className="cost-table__label" style={{paddingLeft: 20}}>
+                  └ OMSP base: {fmtEur(breakdown.vrtBase)}
+                  {!breakdown.omspOverride && <span style={{fontSize: 11}}> (estimated)</span>}
+                </td>
+                <td></td>
               </tr>
               <tr className={breakdown.customsDuty === 0 ? "cost-row--free" : "cost-row--tax"}>
                 <td className="cost-table__label">
@@ -124,8 +199,13 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
                 </td>
                 <td className="calc-value">{fmtEur(breakdown.vatAmount)}</td>
               </tr>
-              <tr>
-                <td className="cost-table__label">{t('calc.nox')}</td>
+              <tr className={breakdown.noxLevy > 0 ? "cost-row--tax" : ""}>
+                <td className="cost-table__label">
+                  {t('calc.nox')}
+                  {fuelType === 'diesel' && breakdown.noxLevy > 0 && (
+                    <span className="calc-rate" style={{fontSize:12, color:'var(--color-warning-text)'}}> (diesel)</span>
+                  )}
+                </td>
                 <td className="calc-value">{fmtEur(breakdown.noxLevy)}</td>
               </tr>
               <tr>
@@ -155,6 +235,16 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
         )}
 
         <div style={{display:'flex', flexDirection:'column', gap:'var(--space-3)', marginTop:'var(--space-5)'}}>
+          {/* Dynamic warning from calculator */}
+          {breakdown.warning && (
+            <div className="alert alert--warning">
+              <img src="/assets/icons/warning_icon.png" alt="Warning" className="alert__icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+              <span>
+                {breakdown.warning}
+              </span>
+            </div>
+          )}
+
           {breakdown.isClassic && (
             <div className="alert alert--success">
               <img src="/assets/icons/shield_icon.png" alt="Exempt" className="alert__icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
@@ -164,13 +254,12 @@ export default function ImportCalculator({ initialPrice, initialYear, ieMarketAv
             </div>
           )}
 
-          <div className="alert alert--warning">
-            <img src="/assets/icons/warning_icon.png" alt="Warning" className="alert__icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+          <div className="alert alert--info" style={{ fontSize: 12, opacity: 0.85 }}>
             <span>
-              {t('calc.vrtNote') || 'VRT is assessed by Revenue on OMSP — always verify at'}
+              💡 {t('calc.vrtNote') || 'VRT is assessed by Revenue on OMSP (Open Market Selling Price) — not your purchase price.'}
               {' '}
               <a href="https://www.revenue.ie/en/importing-vehicles-duty-free-allowances/guide-to-vrt/index.aspx"
-                 target="_blank" rel="noopener noreferrer">revenue.ie/vrt</a>
+                 target="_blank" rel="noopener noreferrer">Verify at revenue.ie/vrt</a>
             </span>
           </div>
         </div>
