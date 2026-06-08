@@ -63,7 +63,7 @@ export default function SearchBar({ onResults, onStats, onIrishResults, onExtern
               if (matched) modelId = matched.modelId;
             }
           }
-          if (!q) q = preset.searchTerms?.[0] || preset.name || '';
+          if (!q) q = preset.searchTerms?.[0] || preset.make || '';
         }
 
         promises.push(
@@ -102,12 +102,11 @@ export default function SearchBar({ onResults, onStats, onIrishResults, onExtern
       const activeIeSources = IE_SOURCES.filter(s => ieSources[s.id]).map(s => s.id);
       if (activeIeSources.length > 0) {
         onSearchStatusChange?.({ type: 'scraping_ie', status: 'fetching', sources: activeIeSources });
-        const searchQ = query || preset?.name || '';
-        const make = preset?.make || searchQ.split(' ')[0] || '';
-        const model = preset?.model || searchQ.split(' ').slice(1).join(' ') || '';
+        const searchMake = preset?.make || (query ? query.split(' ')[0] : '');
+        const searchModel = preset?.model || (query ? query.split(' ').slice(1).join(' ') : '');
         
         promises.push(
-          scrapeIreland(activeIeSources, make, model, yearFrom, yearTo, priceFrom, priceTo)
+          scrapeIreland(activeIeSources, searchMake, searchModel, yearFrom, yearTo, priceFrom, priceTo)
             .then(ieResults => {
               onExternalIeResults?.(ieResults || { listings: [], stats: null });
               onSearchStatusChange?.({ type: 'scraping_ie', status: 'done', count: ieResults.listings?.length || 0 });
