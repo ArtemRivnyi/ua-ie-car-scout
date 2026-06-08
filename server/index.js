@@ -133,6 +133,17 @@ app.get('/api/scrape/ie', async (req, res) => {
   }
 });
 
+/* ── /api/test-puppeteer ──────────────────────────── */
+app.get('/api/test-puppeteer', async (req, res) => {
+  try {
+    const browser = await import('./scrapers/puppeteerSetup.js').then(m => m.getBrowser());
+    const version = await browser.version();
+    res.json({ status: 'ok', version });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message, stack: err.stack });
+  }
+});
+
 /* ── /api/scrape/ua ─────────────────────────────── */
 app.get('/api/scrape/ua', async (req, res) => {
   try {
@@ -150,15 +161,17 @@ app.get('/api/scrape/ua', async (req, res) => {
 
     console.log(`[ua] sources=${sourcesArr} query=${query} years=${yearFrom}-${yearTo}`);
 
+    let scrapeErrors = [];
     const tasks = sourcesArr.map(src => {
-      if (src === 'rst')    return scrapeRst(query, yearFrom, yearTo).catch(e => { console.error('[rst]',e.message); return []; });
-      if (src === 'olx')    return scrapeOlx(query, yearFrom, yearTo).catch(e => { console.error('[olx]',e.message); return []; });
-      if (src === 'carsua') return scrapeCarsUa(query, yearFrom, yearTo).catch(e => { console.error('[carsua]',e.message); return []; });
+      if (src === 'rst')    return scrapeRst(query, yearFrom, yearTo).catch(e => { scrapeErrors.push(`[rst] ${e.message}`); return []; });
+      if (src === 'olx')    return scrapeOlx(query, yearFrom, yearTo).catch(e => { scrapeErrors.push(`[olx] ${e.message}`); return []; });
+      if (src === 'carsua') return scrapeCarsUa(query, yearFrom, yearTo).catch(e => { scrapeErrors.push(`[carsua] ${e.message}`); return []; });
       return Promise.resolve([]);
     });
 
-    let allAds = (await Promise.allSettled(tasks))
-      .flatMap(r => r.status === 'fulfilled' ? r.value : []);
+    const results = await Promise.all(tasks);
+    let allAds = [];
+    results.forEach(ads => { if (Array.isArray(ads)) allAds.push(...ads); });
 
     // Extract make/model from query string for filtering
     const parts = query.trim().split(' ');
@@ -170,9 +183,9 @@ app.get('/api/scrape/ua', async (req, res) => {
     allAds = deduplicateAds(allAds);
 
     const stats = calcStats(allAds);
-    const result = { listings: allAds, stats };
-    setCache(cacheKey, result);
-    res.json(result);
+    const responseData = { listings: allAds, stats, errors: scrapeErrors };
+    setCache(cacheKey, responseData);
+    res.json(responseData);
   } catch (err) {
     console.error('[ua] API Error:', err);
     res.status(500).json({ error: 'Internal server error', details: err.message });
