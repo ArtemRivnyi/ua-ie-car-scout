@@ -127,8 +127,8 @@ export function parseDoneDealHtml(htmlContent, modelQuery, yearFrom, yearTo) {
   const $ = cheerio.load(htmlContent);
   const ads = [];
 
-  // DoneDeal card selectors — try multiple patterns
-  const cards = $('a[href*="/cars/"], a[href*="/ad/"], [class*="card"][class*="listing"], [data-testid*="card"]');
+  // DoneDeal card selectors — safer to use /cars-for-sale/ to avoid nav links
+  const cards = $('a[href*="/cars-for-sale/"], [class*="card"][class*="listing"], ul[data-testid*="list"] > li');
 
   cards.each((i, el) => {
     try {
