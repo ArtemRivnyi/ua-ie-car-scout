@@ -16,8 +16,8 @@ export async function scrapeRst(query, yearFrom, yearTo) {
   const model = parts[1] || '';
   const rates = await getExchangeRates();
   
-  // RST URL structure: /oldcars/car/{make}/{model}/?year={from}-{to}
-  let url = `https://rst.ua/oldcars/car/`;
+  // RST URL structure: /oldcars/{make}/{model}/?year={from}-{to}
+  let url = `https://rst.ua/oldcars/`;
   if (make) url += `${make}/`;
   if (model) url += `${model}/`;
   

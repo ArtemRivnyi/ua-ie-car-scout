@@ -77,7 +77,12 @@ export default function ListingCard({ listing, onSave, onCalc, saved, ieMarketAv
         <div className="car-card__header" style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
           <div style={{flex:1,minWidth:0}}>
             <h3 className="car-card__title">
-              {listing.description || `${listing.make} ${listing.model} ${listing.year || ''}`.trim()}
+              {listing.description || `${listing.make} ${listing.model}`.trim()}
+              {listing.year && !String(listing.description || '').includes(String(listing.year)) && (
+                <span style={{color: 'var(--color-text-muted)', marginLeft: 8, fontWeight: 500}}>
+                  {listing.year}
+                </span>
+              )}
             </h3>
             <div className="car-card__meta">
               {listing.year    && <span className="car-card__meta-item">📅 {listing.year}</span>}

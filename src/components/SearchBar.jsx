@@ -87,7 +87,7 @@ export default function SearchBar({ onResults, onStats, onIrishResults, onExtern
       if (activeUaSources.length > 0) {
         onSearchStatusChange?.({ type: 'scraping_ua', status: 'fetching', sources: activeUaSources });
         promises.push(
-          scrapeUkraine(activeUaSources, query || preset?.name || '', yearFrom, yearTo, priceFrom, priceTo)
+          scrapeUkraine(activeUaSources, query || preset?.make || '', yearFrom, yearTo, priceFrom, priceTo)
             .then(uaResults => {
               scrapedUaListings = uaResults.listings || [];
               onSearchStatusChange?.({ type: 'scraping_ua', status: 'done', count: scrapedUaListings.length });
