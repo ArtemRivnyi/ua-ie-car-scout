@@ -2,12 +2,12 @@ services:
   # ── Backend API (Express + DoneDeal scraper) ───────────────────────────────
   - type: web
     name: ua-ie-car-scout-api
-    env: docker
-    dockerfilePath: ./Dockerfile
+    env: node
     region: frankfurt
     plan: free
     healthCheckPath: /api/health
-    startCommand: node server/index.js
+    buildCommand: npm install
+    startCommand: npm run server
     envVars:
       - key: NODE_ENV
         value: production

@@ -4,6 +4,7 @@
   "description": "Ukraine → Ireland car price comparator with import calculator",
   "type": "module",
   "scripts": {
+    "postinstall": "npx puppeteer browsers install chrome",
     "dev": "node node_modules/vite/bin/vite.js",
     "build": "node node_modules/vite/bin/vite.js build",
     "preview": "node node_modules/vite/bin/vite.js preview",
