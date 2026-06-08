@@ -160,6 +160,18 @@ export default function App() {
                   />
                 </div>
               )}
+              
+              {/* No results state */}
+              {searchStatus.type === 'finish' && allUa.length === 0 && allIe.length === 0 && (
+                <div className="alert alert--warning" style={{marginTop:'var(--space-4)', textAlign: 'center'}}>
+                  <h3>No results found</h3>
+                  <p>Try adjusting your search filters or selecting different sources.</p>
+                  <p style={{fontSize: 'var(--text-xs)', marginTop: 'var(--space-2)', opacity: 0.8}}>
+                    Note: If you selected AUTO.RIA and see 0 results, the public API rate limit may have been reached. 
+                    Other scrapers (OLX, RST, CARS) might be blocked by their servers.
+                  </p>
+                </div>
+              )}
 
               {/* IE Market Panel — show when we have IE data */}
               {(externalIeData?.stats || allIe.length > 0) && (
