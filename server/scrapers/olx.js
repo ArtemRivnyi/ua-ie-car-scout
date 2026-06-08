@@ -186,9 +186,10 @@ export function parseOlx(htmlContent, query, rates, yearFrom, yearTo) {
     if (yearTo && (!year || year > parseInt(yearTo, 10))) return;
 
     let img = card.find('img').attr('src') || card.find('img').attr('srcset')?.split(' ')[0];
-    if (!img) {
+    if (!img || img.includes('no_thumbnail')) {
        img = card.html().match(/src="([^"]+)"/)?.[1];
     }
+    if (img && img.includes('no_thumbnail')) img = null;
     if (img && img.startsWith('/')) img = `https://www.olx.ua${img}`;
     if (img) img = img.replace(':443', '');
 
