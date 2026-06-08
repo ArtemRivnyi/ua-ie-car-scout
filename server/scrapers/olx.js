@@ -54,6 +54,7 @@ export async function scrapeOlx(query, yearFrom, yearTo) {
     console.error('[olx] Puppeteer failed, falling back to HTTP:', err.message);
     try {
       const res = await fetch(url, {
+        signal: AbortSignal.timeout(10000),
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
