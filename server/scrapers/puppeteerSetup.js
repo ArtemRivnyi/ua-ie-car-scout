@@ -25,7 +25,7 @@ export async function getBrowser() {
   
   const launchOptions = {
     headless: true,
-    timeout: 10000,
+    timeout: 30000,
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
     args: [
       '--no-sandbox',
@@ -41,7 +41,7 @@ export async function getBrowser() {
   };
 
   const pLaunch = puppeteer.launch(launchOptions);
-  const pTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Puppeteer launch hard timeout')), 10000));
+  const pTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Puppeteer launch hard timeout')), 30000));
 
   launchPromise = Promise.race([pLaunch, pTimeout]).then(browser => {
     browserInstance = browser;
