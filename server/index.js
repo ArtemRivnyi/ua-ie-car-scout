@@ -150,6 +150,17 @@ app.get('/api/test-puppeteer', async (req, res) => {
   }
 });
 
+/* ── /api/currency ──────────────────────────────────────── */
+app.get('/api/currency', async (req, res) => {
+  try {
+    const { getExchangeRates } = await import('./scrapers/currency.js');
+    const rates = await getExchangeRates();
+    res.json(rates);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch currency rates' });
+  }
+});
+
 /* ── /api/scrape/ua ─────────────────────────────── */
 app.get('/api/scrape/ua', async (req, res) => {
   try {

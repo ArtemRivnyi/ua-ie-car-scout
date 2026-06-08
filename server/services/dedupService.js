@@ -21,6 +21,10 @@ export function deduplicateAds(ads) {
       // RULE: Strict year match — both must have year and it must match
       if (!u.year || !ad.year || u.year !== ad.year) return false;
       
+      // RULE: Make/model match
+      const makeSimilar = u.make?.toLowerCase().trim() === ad.make?.toLowerCase().trim();
+      if (!makeSimilar) return false;
+      
       // RULE: Price similarity
       const maxPrice = Math.max(u.priceOriginal, ad.priceOriginal);
       if (maxPrice === 0) return false;

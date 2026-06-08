@@ -2,7 +2,9 @@
  * externalSearchService.js — UA & IE source registry + backend API callers
  */
 
-const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/api\/?$/, '') + '/api';
+const API_BASE = import.meta.env.VITE_API_BASE
+  ? import.meta.env.VITE_API_BASE.replace(/\/api\/?$/, '') + '/api'
+  : 'https://ua-ie-car-scout-api.onrender.com/api';
 
 /** Fetch Irish listings via backend proxy */
 export async function scrapeIreland(sources, make, model, yearFrom, yearTo, priceFrom, priceTo) {
