@@ -4,7 +4,8 @@
 
 Whether you are comparing prices across Europe or planning to import a car from Ukraine to Ireland, this tool instantly aggregates listings from **6 top marketplaces**, normalizes prices into Euros using live exchange rates, and calculates exact Irish customs and VAT duties.
 
-![UA-IE Car Scout](https://via.placeholder.com/800x400.png?text=UA-IE+Car+Scout)
+    
+
 
 ---
 
@@ -15,7 +16,7 @@ Importing a vehicle involves complex math: customs clearance, VAT, and shipping 
 **UA-IE Car Scout solves this by:**
 1. **Aggregating 6 Marketplaces in 1 Click**: Instead of opening 6 tabs, enter "Toyota Corolla" once and see results from `AUTO.RIA`, `RST.ua`, `CARS.ua`, `OLX.ua`, `DoneDeal`, `CarsIreland`, and `Carzone`.
 2. **Real-Time Currency Normalization**: Ukrainian sites use UAH or USD. Irish sites use EUR. Our API fetches live exchange rates from the National Bank of Ukraine and normalizes every single price to EUR for perfect 1-to-1 comparison.
-3. **Advanced Import Calculator**: It doesn't just show the price of the car; it calculates the **Total Landed Cost in Ireland** including standard shipping (€1400), 10% Customs Duty, and 23% Irish VAT, showing you the true final price before you even click on the listing.
+3. **Advanced Import Calculator**: It doesn't just show the price of the car; it calculates the **Total Landed Cost in Ireland** including standard shipping (€1400), 6.5% Customs Duty, and 23% Irish VAT, showing you the true final price before you even click on the listing.
 4. **Smart Anti-Bot Evasion**: The backend utilizes both HTTP DOM scraping and `puppeteer-extra-plugin-stealth` to bypass Cloudflare and scrape heavily protected SPAs (Single Page Applications) like DoneDeal and Auto.RIA.
 5. **Deduplication Engine**: Cars are often posted on multiple sites (e.g. OLX and Auto.RIA). Our smart dedup engine analyzes prices, years, and models to group duplicate listings together.
 
@@ -33,7 +34,7 @@ The project is a monorepo consisting of a modern React/Vite frontend and a robus
 | **`/server/scrapers/`** | Scraper Modules | Individual scrapers for all 6 websites (`olx.js`, `donedeal.js`, `rst.js`, etc.). These handle HTML parsing and Puppeteer logic. |
 | **`/server/scrapers/puppeteerSetup.js`** | Puppeteer Config | Manages the hidden headless browser instance, including stealth plugins and timeout recoveries. |
 | **`/tests/live_scrapers.test.js`**| Integration Tests | A robust test suite that hits the live websites to ensure the parsers are working against the latest DOM changes. |
-| **`importCalcService.js`** | Financial Logic | The core math engine: `Cost + Shipping + Customs (10%) + VAT (23%)`. |
+| **`importCalcService.js`** | Financial Logic | The core math engine: `Cost + Shipping + Customs (6.5%) + VAT (23%)`. |
 
 ---
 
@@ -47,8 +48,7 @@ The project is a monorepo consisting of a modern React/Vite frontend and a robus
 
 ### Backend
 - **Node.js & Express**
-- **Puppeteer** (with Stealth Plugin for bypassing Cloudflare)
-- **Cheerio** (Blazing fast HTML DOM parsing for HTTP fallbacks)
+- **Cheerio / Puppeteer** (Dual-mode scraping: Cheerio for blazing fast HTTP parsing, falling back to Puppeteer Stealth for bypassing Cloudflare on protected SPAs)
 - **Node Test Runner** (Native `node --test` for CI/CD integration)
 
 ---

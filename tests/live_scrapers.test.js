@@ -70,3 +70,56 @@ describe('Live Scrapers Data Integrity Tests', { timeout: 60000 }, () => {
     validateAds('Carzone', ads);
   });
 });
+
+describe('Live Scrapers Data Integrity Tests (Classic Cars)', { timeout: 60000 }, () => {
+  const query = 'Toyota'; // Classic Toyota (e.g. Corolla, Supra, AE86)
+  const yearFrom = 1985;
+  const yearTo = 1995;
+  
+  const validateAds = (sourceName, ads) => {
+    assert(Array.isArray(ads), `${sourceName} should return an array`);
+    if (ads.length === 0) {
+      console.warn(`\n[WARNING] ${sourceName} returned 0 results for classic cars. Skipping strict validation.`);
+      return;
+    }
+    for (const ad of ads) {
+      assert.ok(ad.id, `${sourceName}: ad is missing an id`);
+      assert.ok(ad.sourceUrl, `${sourceName}: ad is missing a sourceUrl`);
+      assert.ok(ad.priceEur > 0 || ad.priceOriginal > 0, `${sourceName}: ad has invalid price ${ad.priceEur}`);
+      assert.ok(ad.year >= 1900, `${sourceName}: ad has invalid year ${ad.year}`);
+      assert.ok(Array.isArray(ad.photos), `${sourceName}: photos should be an array`);
+      assert.strictEqual(typeof ad.description, 'string', `${sourceName}: description should be a string`);
+    }
+  };
+
+  it('RST.ua scraper should return valid classic data', async () => {
+    const ads = await scrapeRst(query, yearFrom, yearTo);
+    validateAds('RST.ua', ads);
+  });
+
+  it('OLX.ua scraper should return valid classic data', async () => {
+    const ads = await scrapeOlx(query, yearFrom, yearTo);
+    validateAds('OLX.ua', ads);
+  });
+
+  it('CARS.ua scraper should return valid classic data', async () => {
+    const ads = await scrapeCarsUa(query, yearFrom, yearTo);
+    validateAds('CARS.ua', ads);
+  });
+
+  it('DoneDeal.ie scraper should return valid classic data', async () => {
+    const ads = await scrapeDoneDeal(query, '', yearFrom, yearTo);
+    validateAds('DoneDeal', ads);
+  });
+
+  it('CarsIreland.ie scraper should return valid classic data', async () => {
+    const ads = await scrapeCarsIreland(query, '', yearFrom, yearTo);
+    validateAds('CarsIreland', ads);
+  });
+
+  it('Carzone.ie scraper should return valid classic data', async () => {
+    const ads = await scrapeCarzone(query, '', yearFrom, yearTo);
+    validateAds('Carzone', ads);
+  });
+});
+
