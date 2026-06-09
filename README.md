@@ -1,5 +1,11 @@
 # 🚗 UA-IE Car Scout
 
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![Puppeteer](https://img.shields.io/badge/puppeteer-%2340B5A4.svg?style=for-the-badge&logo=puppeteer&logoColor=white)
+
 **UA-IE Car Scout** is a powerful, real-time meta-search engine and financial calculator designed to bridge the gap between the Ukrainian and Irish automotive markets. 
 
 Whether you are comparing prices across Europe or planning to import a car from Ukraine to Ireland, this tool instantly aggregates listings from **6 top marketplaces**, normalizes prices into Euros using live exchange rates, and calculates exact Irish customs and VAT duties.
