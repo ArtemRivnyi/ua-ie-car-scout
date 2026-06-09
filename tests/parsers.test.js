@@ -475,12 +475,12 @@ test('Parser Unit Tests — Full Coverage', async (t) => {
 
   await t.test('parseDoneDealHtml — card elements with links and prices', () => {
     const html = `
-      <a href="/cars/12345678">
+      <a href="/cars-for-sale/12345678">
         <div>Toyota Corolla 2016</div>
         <span>€12,500</span>
         <img src="https://img.dd.ie/photo.jpg" />
       </a>
-      <a href="/cars/87654321">
+      <a href="/cars-for-sale/87654321">
         <div>Honda Civic 2018</div>
         <span>€15,000</span>
       </a>
@@ -496,8 +496,8 @@ test('Parser Unit Tests — Full Coverage', async (t) => {
 
   await t.test('parseDoneDealHtml — year filter', () => {
     const html = `
-      <a href="/cars/111"><span>€10,000</span><div>Car 2016</div></a>
-      <a href="/cars/222"><span>€8,000</span><div>Car 2010</div></a>
+      <a href="/cars-for-sale/111"><span>€10,000</span><div>Car 2016</div></a>
+      <a href="/cars-for-sale/222"><span>€8,000</span><div>Car 2010</div></a>
     `;
     const ads = parseDoneDealHtml(html, 'Car', 2015, 2020);
     assert.strictEqual(ads.length, 1);
@@ -505,7 +505,7 @@ test('Parser Unit Tests — Full Coverage', async (t) => {
   });
 
   await t.test('parseDoneDealHtml — no price = skipped', () => {
-    const html = `<a href="/cars/111"><div>Car without price 2016</div></a>`;
+    const html = `<a href="/cars-for-sale/111"><div>Car without price 2016</div></a>`;
     const ads = parseDoneDealHtml(html, 'Car', null, null);
     assert.strictEqual(ads.length, 0);
   });
