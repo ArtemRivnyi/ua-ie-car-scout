@@ -11,6 +11,7 @@
 
 import express from 'express';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
 import { scrapeDoneDeal }   from './scrapers/donedeal.js';
 import { scrapeCarsIreland } from './scrapers/carsireland.js';
 import { scrapeCarzone }    from './scrapers/carzone.js';
@@ -256,7 +257,8 @@ function applyFilters(ads, { make, model, yearFrom, yearTo, priceFrom, priceTo }
 }
 
 /* ── Start ─────────────────────────────────────── */
-if (process.env.NODE_ENV !== 'test') {
+const isMainModule = process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url);
+if (isMainModule || process.env.NODE_ENV === 'production') {
   app.listen(PORT, () => {
     console.log(`🚗 UA→IE Car Scout server on http://localhost:${PORT}`);
   });
