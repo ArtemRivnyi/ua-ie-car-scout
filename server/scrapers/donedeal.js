@@ -114,6 +114,7 @@ export function parseDoneDeal(scriptContent, modelQuery, yearFrom, yearTo) {
   console.log(`[donedeal] Got ${ads.length} ads for "${modelQuery}" via NEXT_DATA`);
 
   let adsList = ads.map(ad => normalizeDoneDealAd(ad)).filter(Boolean);
+  adsList = adsList.filter(ad => ad.priceEur > 0);
   if (yearFrom) adsList = adsList.filter(ad => ad.year && ad.year >= parseInt(yearFrom, 10));
   if (yearTo) adsList = adsList.filter(ad => ad.year && ad.year <= parseInt(yearTo, 10));
   

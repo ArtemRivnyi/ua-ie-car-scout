@@ -1,4 +1,4 @@
-import { describe, it } from 'node:test';
+import { describe, it, after } from 'node:test';
 import assert from 'node:assert';
 import { scrapeRst } from '../server/scrapers/rst.js';
 import { scrapeOlx } from '../server/scrapers/olx.js';
@@ -6,6 +6,7 @@ import { scrapeCarsUa } from '../server/scrapers/carsua.js';
 import { scrapeDoneDeal } from '../server/scrapers/donedeal.js';
 import { scrapeCarsIreland } from '../server/scrapers/carsireland.js';
 import { scrapeCarzone } from '../server/scrapers/carzone.js';
+import { closeBrowser } from '../server/scrapers/puppeteerSetup.js';
 
 /**
  * LIVE SCRAPER TESTS
@@ -56,7 +57,7 @@ describe('Live Scrapers Data Integrity Tests', { timeout: 60000 }, () => {
   });
 
   it('DoneDeal.ie scraper should return valid live data', async () => {
-    const ads = await scrapeDoneDeal(query, '', yearFrom, null);
+    const ads = await scrapeDoneDeal(query, yearFrom, null);
     validateAds('DoneDeal', ads);
   });
 
@@ -91,10 +92,14 @@ describe('Live Scrapers — Classic Cars (1985–1995)', { timeout: 60000 }, () 
   });
 
   it('DoneDeal.ie: classic listings', async () => {
-    const ads = await scrapeDoneDeal(query, '', yearFrom, yearTo);
+    const ads = await scrapeDoneDeal(query, yearFrom, yearTo);
     assert(Array.isArray(ads), 'DoneDeal should return array');
     if (ads.length === 0) { console.warn('[WARNING] DoneDeal: 0 classic results'); return; }
     assert.ok(ads[0].year >= 1985 && ads[0].year <= 1995, `Year out of range: ${ads[0].year}`);
+  });
+
+  after(async () => {
+    await closeBrowser();
   });
 });
 
