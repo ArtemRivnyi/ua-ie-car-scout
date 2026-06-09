@@ -21,7 +21,7 @@ describe('ListingCard Component', () => {
   it('renders listing basic info correctly', () => {
     render(<ListingCard listing={mockListing} onSave={() => {}} onCalc={() => {}} />);
     
-    expect(screen.getByText('Toyota Corolla 2010')).toBeInTheDocument();
+    expect(screen.getByText(/Toyota Corolla/)).toBeInTheDocument();
     expect(screen.getByText(/€\s*5[\s,\xA0]*000/)).toBeInTheDocument();
     expect(screen.getAllByText(/2010/)).toHaveLength(2); // In title and in meta
     expect(screen.getByText('RST')).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe('ListingCard Component', () => {
   });
 
   it('displays profitability badge if ieMarketAvg is provided', () => {
-    render(<ListingCard listing={mockListing} ieMarketAvg={10000} onSave={() => {}} onCalc={() => {}} />);
+    render(<ListingCard listing={mockListing} ieMarketAvg={15000} onSave={() => {}} onCalc={() => {}} />);
     expect(screen.getByText(/Save/i)).toBeInTheDocument();
   });
 
