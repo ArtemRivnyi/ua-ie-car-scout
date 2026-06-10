@@ -20,3 +20,4 @@ npm-debug.log*
 
 # Test artifacts
 test_esbuild.cjs
+.cache/

@@ -65,7 +65,14 @@ function calcStats(listings) {
 
 /* ── Health ─────────────────────────────────────── */
 app.get('/api/health', (_req, res) =>
-  res.json({ status: 'ok', ts: new Date().toISOString(), cacheSize: cache.size })
+  res.json({
+    status: 'ok',
+    version: '1.0.0',
+    scrapers: ['rst', 'olx', 'donedeal', 'carzone', 'carsireland'],
+    render: true,
+    ts: new Date().toISOString(),
+    cacheSize: cache.size
+  })
 );
 
 /* ── AutoRIA proxy ──────────────────────────────── */
