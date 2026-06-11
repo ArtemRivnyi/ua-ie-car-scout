@@ -24,8 +24,7 @@ body {
   font-weight: var(--weight-normal);
   line-height: var(--leading-normal);
   color: var(--color-text-primary);
-  background: linear-gradient(135deg, var(--n-50) 0%, var(--n-150) 100%);
-  background-attachment: fixed;
+  background: transparent; /* Matrix canvas will be behind this */
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -105,16 +104,10 @@ img, video { display: block; max-width: 100%; }
   border-radius: var(--radius-sm);
 }
 
-/* ── Body explicitly picks up token background ── */
+/* ── Body explicitly picks up transparent background ── */
 body {
-  background: linear-gradient(135deg, var(--n-50) 0%, var(--n-150) 100%);
-  background-attachment: fixed;
+  background: transparent;
   color: var(--color-text-primary);
-}
-@media (prefers-color-scheme: dark) {
-  body {
-    background: linear-gradient(135deg, var(--n-950) 0%, #111827 100%);
-  }
 }
 
 /* ── Improve container padding ── */

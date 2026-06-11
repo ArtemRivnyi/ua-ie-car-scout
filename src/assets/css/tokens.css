@@ -1,100 +1,100 @@
 /* ═══════════════════════════════════════════════
-   UA → IE Car Scout — Design Tokens
-   Inspired by Apple precision + Midjourney atmosphere
+   UA → IE Car Scout — Design Tokens (Vibecoding Edition)
    ═══════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
 
 :root {
   /* — Brand Colors — */
   --brand-midnight:    #0A0E1A;
   --brand-navy:        #111827;
   --brand-blue:        #1D3557;
-  --brand-accent:      #2563EB;
-  --brand-accent-light:#3B82F6;
+  --brand-accent:      #667eea;
+  --brand-accent-light:#764ba2;
   --brand-gold:        #F59E0B;
   --brand-gold-light:  #FCD34D;
-  --brand-ukraine:     #3B82F6;   /* UA blue */
-  --brand-ukraine-y:   #FBBF24;   /* UA yellow */
-  --brand-ireland:     #16A34A;   /* IE green */
+  --brand-ukraine:     #3B82F6;
+  --brand-ukraine-y:   #FBBF24;
+  --brand-ireland:     #16A34A;
 
-  /* — Neutral Scale — */
-  --n-0:    #FFFFFF;
-  --n-50:   #F8FAFC;
-  --n-100:  #F1F5F9;
-  --n-150:  #E8EDF5;
-  --n-200:  #E2E8F0;
-  --n-300:  #CBD5E1;
-  --n-400:  #94A3B8;
-  --n-500:  #64748B;
-  --n-600:  #475569;
-  --n-700:  #334155;
-  --n-800:  #1E293B;
-  --n-900:  #0F172A;
-  --n-950:  #060E1E;
+  /* — Neutral Scale (Dark Theme Base) — */
+  --n-0:    #050505;
+  --n-50:   #0a0a0f;
+  --n-100:  #111116;
+  --n-150:  #1a1a24;
+  --n-200:  #252533;
+  --n-300:  #333345;
+  --n-400:  #4d4d66;
+  --n-500:  #666680;
+  --n-600:  #8585a3;
+  --n-700:  #a3a3c2;
+  --n-800:  #c2c2d6;
+  --n-900:  #e0e0eb;
+  --n-950:  #f0f0f5;
 
-  /* — Semantic — */
-  --color-bg-page:       var(--n-50);
-  --color-bg-surface:    var(--n-0);
-  --color-bg-elevated:   var(--n-0);
-  --color-bg-subtle:     var(--n-100);
-  --color-bg-muted:      var(--n-150);
+  /* — Semantic (Hardcoded to Dark Mode) — */
+  --color-bg-page:       transparent;
+  --color-bg-surface:    rgba(10, 10, 15, 0.85);
+  --color-bg-elevated:   rgba(17, 17, 22, 0.9);
+  --color-bg-subtle:     rgba(26, 26, 36, 0.8);
+  --color-bg-muted:      rgba(37, 37, 51, 0.7);
 
-  --color-text-primary:  var(--n-900);
-  --color-text-secondary:var(--n-600);
-  --color-text-muted:    var(--n-400);
-  --color-text-inverse:  var(--n-0);
+  --color-text-primary:  #ffffff;
+  --color-text-secondary:#a3a3c2;
+  --color-text-muted:    #8585a3;
+  --color-text-inverse:  #050505;
 
-  --color-border:        var(--n-200);
-  --color-border-subtle: var(--n-150);
-  --color-border-strong: var(--n-300);
+  --color-border:        rgba(102, 126, 234, 0.2);
+  --color-border-subtle: rgba(102, 126, 234, 0.1);
+  --color-border-strong: rgba(102, 126, 234, 0.4);
 
   --color-accent:        var(--brand-accent);
-  --color-accent-hover:  #1D4ED8;
-  --color-accent-subtle: #EFF6FF;
-  --color-accent-text:   #1E40AF;
+  --color-accent-hover:  #764ba2;
+  --color-accent-subtle: rgba(102, 126, 234, 0.15);
+  --color-accent-text:   #a3bffa;
 
-  --color-success:       #16A34A;
-  --color-success-bg:    #F0FDF4;
-  --color-success-text:  #15803D;
+  --color-success:       #10B981;
+  --color-success-bg:    rgba(16, 185, 129, 0.15);
+  --color-success-text:  #34D399;
 
-  --color-warning:       #D97706;
-  --color-warning-bg:    #FFFBEB;
-  --color-warning-text:  #92400E;
+  --color-warning:       #F59E0B;
+  --color-warning-bg:    rgba(245, 158, 11, 0.15);
+  --color-warning-text:  #FBBF24;
 
-  --color-danger:        #DC2626;
-  --color-danger-bg:     #FEF2F2;
-  --color-danger-text:   #991B1B;
+  --color-danger:        #EF4444;
+  --color-danger-bg:     rgba(239, 68, 68, 0.15);
+  --color-danger-text:   #FCA5A5;
 
   --color-ua:            var(--brand-ukraine);
-  --color-ua-bg:         #EFF6FF;
+  --color-ua-bg:         rgba(59, 130, 246, 0.15);
   --color-ie:            var(--brand-ireland);
-  --color-ie-bg:         #F0FDF4;
+  --color-ie-bg:         rgba(22, 163, 74, 0.15);
 
   /* — Typography — */
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-body:    'DM Sans', -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Space Grotesk', -apple-system, sans-serif;
   --font-mono:    'SF Mono', 'Fira Code', monospace;
 
-  --text-xs:    0.75rem;    /* 12px */
-  --text-sm:    0.875rem;   /* 14px */
-  --text-base:  1rem;       /* 16px */
-  --text-lg:    1.125rem;   /* 18px */
-  --text-xl:    1.25rem;    /* 20px */
-  --text-2xl:   1.5rem;     /* 24px */
-  --text-3xl:   1.875rem;   /* 30px */
-  --text-4xl:   2.25rem;    /* 36px */
-  --text-5xl:   3rem;       /* 48px */
+  --text-xs:    0.75rem;
+  --text-sm:    0.875rem;
+  --text-base:  1rem;
+  --text-lg:    1.125rem;
+  --text-xl:    1.25rem;
+  --text-2xl:   1.5rem;
+  --text-3xl:   1.875rem;
+  --text-4xl:   2.25rem;
+  --text-5xl:   3rem;
 
   --weight-light:   300;
   --weight-normal:  400;
   --weight-medium:  500;
-  --weight-semibold:600;
+  --weight-semibold: 600;
+  --weight-bold:    700;
 
   --leading-tight:  1.25;
   --leading-snug:   1.375;
   --leading-normal: 1.5;
-  --leading-relaxed:1.625;
+  --leading-relaxed: 1.625;
 
   /* — Spacing — */
   --space-1:  0.25rem;
@@ -117,22 +117,22 @@
   --radius-2xl:  24px;
   --radius-full: 9999px;
 
-  /* — Shadows — */
-  --shadow-sm:   0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
-  --shadow-md:   0 2px 8px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
-  --shadow-lg:   0 4px 16px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08);
-  --shadow-xl:   0 8px 32px rgba(0,0,0,0.10), 0 16px 48px rgba(0,0,0,0.10);
-  --shadow-card: 0 0 0 1px var(--color-border), var(--shadow-sm);
-  --shadow-floating: 0 0 0 1px var(--color-border), var(--shadow-lg);
+  /* — Shadows (Neon Glows) — */
+  --shadow-sm:   0 0 10px rgba(102, 126, 234, 0.1);
+  --shadow-md:   0 0 15px rgba(102, 126, 234, 0.2);
+  --shadow-lg:   0 0 25px rgba(102, 126, 234, 0.3);
+  --shadow-xl:   0 0 40px rgba(102, 126, 234, 0.5);
+  --shadow-card: 0 0 0 1px var(--color-border), var(--shadow-md);
+  --shadow-floating: 0 0 0 1px var(--color-border-strong), var(--shadow-xl);
 
   /* — Transitions — */
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --duration-fast:   120ms;
-  --duration-normal: 200ms;
-  --duration-slow:   320ms;
+  --duration-fast:   150ms;
+  --duration-normal: 250ms;
+  --duration-slow:   350ms;
 
   /* — Layout — */
   --container-sm:  640px;
@@ -141,40 +141,5 @@
   --container-xl:  1280px;
   --container-2xl: 1440px;
 
-  --nav-height: 64px;
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg-page:       var(--n-950);
-    --color-bg-surface:    var(--n-900);
-    --color-bg-elevated:   var(--n-800);
-    --color-bg-subtle:     #12172A;
-    --color-bg-muted:      #1A2030;
-
-    --color-text-primary:  var(--n-50);
-    --color-text-secondary:var(--n-400);
-    --color-text-muted:    var(--n-600);
-
-    --color-border:        rgba(255,255,255,0.08);
-    --color-border-subtle: rgba(255,255,255,0.05);
-    --color-border-strong: rgba(255,255,255,0.14);
-
-    --color-accent-subtle: rgba(37,99,235,0.15);
-    --color-accent-text:   #93C5FD;
-
-    --color-success-bg:    rgba(22,163,74,0.15);
-    --color-success-text:  #4ADE80;
-    --color-warning-bg:    rgba(217,119,6,0.15);
-    --color-warning-text:  #FBBF24;
-    --color-danger-bg:     rgba(220,38,38,0.15);
-    --color-danger-text:   #FCA5A5;
-
-    --color-ua-bg:         rgba(59,130,246,0.15);
-    --color-ie-bg:         rgba(22,163,74,0.15);
-
-    --shadow-card: 0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.4);
-    --shadow-floating: 0 0 0 1px rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.6);
-  }
+  --nav-height: 70px;
 }
