@@ -1,6 +1,6 @@
 {
   "name": "ua-ie-car-scout",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Ukraine → Ireland car price comparator with import calculator",
   "type": "module",
   "scripts": {
