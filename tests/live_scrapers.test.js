@@ -16,7 +16,9 @@ import { closeBrowser } from '../server/scrapers/puppeteerSetup.js';
  * If a site updates its layout and breaks our scraper, these tests will fail immediately,
  * letting us know that we are returning incorrect/missing data.
  */
-describe('Live Scrapers Data Integrity Tests', { timeout: 60000 }, () => {
+const isCI = !!process.env.CI;
+
+describe('Live Scrapers Data Integrity Tests', { timeout: 60000, skip: isCI ? 'Skipping live scrapers in CI' : false }, () => {
   const query = 'Toyota'; // A highly popular make guaranteed to have results
   const yearFrom = 2010;
   
@@ -72,7 +74,7 @@ describe('Live Scrapers Data Integrity Tests', { timeout: 60000 }, () => {
   });
 });
 
-describe('Live Scrapers — Classic Cars (1985–1995)', { timeout: 60000 }, () => {
+describe('Live Scrapers — Classic Cars (1985–1995)', { timeout: 60000, skip: isCI ? 'Skipping live scrapers in CI' : false }, () => {
   const query = 'Toyota';
   const yearFrom = 1985;
   const yearTo = 1995;
